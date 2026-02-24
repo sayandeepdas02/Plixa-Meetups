@@ -1,10 +1,10 @@
-# 🎨 Plixa - Real-Time Collaborative Whiteboard
+# 🎨 Plixa - Real-Time Collaborative Whiteboard & Video Meetings
 
 <div align="center">
 
 ![Plixa Logo](./frontend-react/src/assets/logo.png)
 
-**Professional real-time collaboration for the modern web**
+**Professional real-time collaboration — draw, talk, and build together**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Plixa--Meetups-blue?logo=github)](https://github.com/sayandeepdas02/Plixa-Meetups)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -19,36 +19,43 @@
 
 ## 📖 About The Project
 
-**Plixa** is a cutting-edge, real-time collaborative whiteboard application built with **WebRTC** technology. It enables seamless visual communication for remote teams, educators, and professionals with ultra-low latency and crystal-clear precision.
+**Plixa** is a full-featured, real-time collaborative platform built on **WebRTC** and **Socket.IO**. It brings together an infinite whiteboard canvas, a live in-room chat, and **voice & video calling** — all inside one seamless browser experience with no downloads required.
 
 ### ✨ Key Features
 
-- 🚀 **Real-Time Collaboration** - See cursors and strokes update in milliseconds with WebRTC mesh network
-- 🎨 **Professional Drawing Tools** - Complete set of shapes, arrows, text tools, and freehand drawing
-- 🔒 **Secure & Private** - End-to-end encrypted connections, no data stored on servers
-- 🌐 **Browser-Based** - No downloads required, just share a link and start collaborating
-- 👥 **Multi-User Support** - Unlimited participants in Pro plan, up to 3 in free tier
-- 💬 **Real-Time Chat** - Built-in chat functionality for seamless communication
-- 🎯 **Infinite Canvas** - Never run out of space for your ideas
-- 📱 **Responsive Design** - Works beautifully on desktop, tablet, and mobile devices
+- 🚀 **Real-Time Collaboration** — Sub-millisecond whiteboard sync via Socket.IO mesh signaling
+- 🎨 **Professional Drawing Tools** — Shapes, arrows, freehand, text, eraser, and color palette
+- 📹 **Voice & Video Calls** — Peer-to-peer audio/video via WebRTC mesh network
+- 🎤 **Media Controls** — Toggle mic, camera on/off; leave call without leaving the board
+- 👥 **Participant Grid** — Dynamic video grid (`VideoGrid`) with individual participant tiles (`VideoTile`)
+- 💬 **Real-Time Chat** — Persistent in-room chat alongside the board
+- 🔒 **Secure & Private** — JWT authentication; end-to-end peer connections
+- 🌐 **Browser-Based** — Just share a link, no plugins needed
+- 🎯 **Infinite Canvas** — Pan and zoom for unlimited workspace
+- 📱 **Responsive Design** — Desktop, tablet, and mobile friendly
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 19.2** - Modern UI library with latest features
-- **Vite 7.2** - Lightning-fast build tool and dev server
-- **TailwindCSS 4.1** - Utility-first CSS framework
-- **React Router DOM 7.9** - Client-side routing
-- **Socket.io Client 4.8** - Real-time bidirectional communication
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.2 | UI library |
+| Vite | 7.2 | Build tool & dev server |
+| TailwindCSS | 4.1 | Utility-first styling |
+| React Router DOM | 7.9 | Client-side routing |
+| Socket.io Client | 4.8 | Real-time signaling & chat |
+| WebRTC (native) | — | Peer-to-peer audio/video |
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express 5.1** - Fast, unopinionated web framework
-- **Socket.io 4.8** - WebSocket library for real-time events
-- **JWT** - JSON Web Tokens for authentication
-- **bcryptjs** - Password hashing
+| Technology | Version | Purpose |
+|---|---|---|
+| Node.js | v18+ | JavaScript runtime |
+| Express | 5.1 | HTTP server framework |
+| Socket.io | 4.8 | WebSocket / signaling server |
+| JWT | — | Stateless authentication |
+| bcryptjs | — | Password hashing |
 
 ---
 
@@ -56,9 +63,9 @@
 
 ### Prerequisites
 
-Make sure you have the following installed:
-- **Node.js** (v18 or higher)
-- **npm** (v9 or higher)
+- **Node.js** v18 or higher
+- **npm** v9 or higher
+- A browser with WebRTC support (Chrome, Firefox, Edge, Safari)
 
 ### Installation
 
@@ -72,74 +79,119 @@ Make sure you have the following installed:
    ```bash
    npm run install-all
    ```
-   This will install dependencies for the root, backend, and frontend.
+   Installs dependencies for the root, backend, and frontend in one step.
 
-3. **Start the development servers**
+3. **Configure environment variables**
+
+   Create a `.env` file inside the `backend/` directory:
+   ```env
+   PORT=3000
+   JWT_SECRET=your_jwt_secret_here
+   ```
+
+4. **Start the development servers**
    ```bash
    npm run dev
    ```
-   This will concurrently start:
-   - Backend server on `http://localhost:3000`
-   - Frontend dev server on `http://localhost:5173`
+   Starts concurrently:
+   - Backend (Express + Socket.IO) → `http://localhost:3000`
+   - Frontend (Vite + React) → `http://localhost:5173`
 
-4. **Open your browser**
-   Navigate to `http://localhost:5173` to see the application.
+5. **Open your browser** and navigate to `http://localhost:5173`
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Whiteboard-app/
-├── backend/                 # Node.js + Express + Socket.io backend
-│   ├── index.js            # Main server file
-│   ├── models.js           # Data models
-│   └── package.json        # Backend dependencies
+Plixa-Meetups/
+├── backend/                        # Node.js + Express + Socket.IO backend
+│   ├── index.js                    # Main server entry point
+│   ├── models.js                   # In-memory data models (rooms, users)
+│   ├── socket/                     # Modular Socket.IO event handlers
+│   │   ├── whiteboardHandlers.js   # Whiteboard draw & sync events
+│   │   ├── chatHandlers.js         # Real-time chat events
+│   │   └── webrtcHandlers.js       # WebRTC signaling (offer/answer/ICE)
+│   └── package.json
 │
-├── frontend-react/         # React + Vite frontend
+├── frontend-react/                 # React + Vite frontend
 │   ├── src/
-│   │   ├── assets/         # Images, logos, and static files
-│   │   ├── components/     # Reusable React components
-│   │   ├── context/        # React Context providers
-│   │   ├── pages/          # Page components (Landing, Auth, Board)
-│   │   ├── App.jsx         # Main App component
-│   │   └── main.jsx        # Entry point
-│   ├── index.html          # HTML template
-│   └── package.json        # Frontend dependencies
+│   │   ├── assets/                 # Logos and static assets
+│   │   ├── components/
+│   │   │   ├── chat/               # Chat panel components
+│   │   │   └── webrtc/             # Voice & video components
+│   │   │       ├── VideoGrid.jsx   # Responsive participant video grid
+│   │   │       ├── VideoTile.jsx   # Individual participant video tile
+│   │   │       └── CallControls.jsx# Mic / Camera / Leave controls
+│   │   ├── context/                # React Context providers
+│   │   ├── hooks/
+│   │   │   └── useWebRTC.js        # Custom hook: WebRTC lifecycle & media
+│   │   ├── pages/                  # Landing, Auth, Board page components
+│   │   ├── App.jsx                 # Root component & routing
+│   │   └── main.jsx                # Vite entry point
+│   ├── index.html
+│   └── package.json
 │
-├── package.json            # Root package.json with scripts
-└── README.md               # You are here!
+├── package.json                    # Root scripts (dev, install-all)
+└── README.md
 ```
 
 ---
 
 ## 🎯 Usage
 
-### Creating a Board
-1. Click **"Start Whiteboarding"** on the landing page
-2. You'll be redirected to a new board with a unique ID
-3. Share the board URL with your team members
+### Starting a Board
+1. Sign up or log in
+2. Click **"Start Whiteboarding"** on the landing page
+3. A new board with a unique room ID is created
+4. Share the URL with collaborators — they join instantly
 
 ### Drawing Tools
-- **Freehand** - Click and drag to draw freely
-- **Shapes** - Select from rectangles, circles, arrows, and more
-- **Text** - Add text annotations to your board
-- **Eraser** - Remove unwanted elements
-- **Colors** - Choose from a variety of colors
+- **Freehand** — Click and drag to sketch freely
+- **Shapes** — Rectangles, circles, arrows, and lines
+- **Text** — Annotate with text boxes
+- **Eraser** — Remove specific strokes
+- **Color Picker** — Full palette for strokes and fills
 
-### Collaboration
-- **Real-time Updates** - See everyone's changes instantly
-- **Cursor Tracking** - View other users' cursor positions
-- **Chat** - Communicate with team members in real-time
+### Voice & Video Call
+1. Click the **📹 Join Call** button in the board toolbar
+2. Allow browser permission for camera and microphone
+3. Participants appear in the **Video Grid** overlay
+4. Use **CallControls** to:
+   - 🎤 Toggle microphone on/off
+   - 📷 Toggle camera on/off
+   - 📞 Leave the call (stays on the board)
+
+### Chat
+- Click the **💬 Chat** panel to open the sidebar
+- Messages are broadcast in real-time to all room participants
 
 ---
 
-## 🌟 Use Cases
+## 🌐 WebRTC Architecture
 
-- **Remote Teams** - Run retrospectives, brainstorming sessions, and sprint planning
-- **Educators & Tutors** - Conduct interactive online lessons and tutoring sessions
-- **System Design** - Architect complex systems for technical interviews
-- **Creative Collaboration** - Collaborate on designs, wireframes, and mockups
+Plixa uses a **peer-to-peer mesh** topology signaled via Socket.IO:
+
+```
+                  ┌─────────────────────┐
+                  │  Socket.IO Server   │
+                  │  (Signaling Only)   │
+                  └──────┬──────┬───────┘
+                  offer/ │      │ ICE candidates
+                  answer │      │
+            ┌────────────┘      └────────────┐
+            ▼                                ▼
+     ┌─────────────┐    P2P Media     ┌─────────────┐
+     │   Peer A    │◄────────────────►│   Peer B    │
+     │ useWebRTC   │                  │ useWebRTC   │
+     └─────────────┘                  └─────────────┘
+```
+
+- **`webrtcHandlers.js`** — Handles `join-call`, `leave-call`, `offer`, `answer`, `ice-candidate` events on the server
+- **`useWebRTC.js`** — Manages `RTCPeerConnection` lifecycle, local/remote streams, and media track toggling
+- **`VideoGrid.jsx`** — Renders a dynamic CSS grid of all live participants
+- **`VideoTile.jsx`** — Displays a single participant's stream with name overlay and mute indicators
+- **`CallControls.jsx`** — Toolbar buttons and state for mic, camera, and call exit
 
 ---
 
@@ -147,46 +199,34 @@ Whiteboard-app/
 
 ### Root Directory
 ```bash
-npm run dev          # Start both backend and frontend concurrently
-npm run install-all  # Install dependencies for all packages
+npm run dev          # Start backend + frontend concurrently
+npm run install-all  # Install all project dependencies
 ```
 
 ### Backend (`/backend`)
 ```bash
-npm run dev          # Start backend with nodemon (auto-reload)
-npm start            # Start backend in production mode
+npm run dev    # Start with nodemon (auto-reload on change)
+npm start      # Production mode
 ```
 
 ### Frontend (`/frontend-react`)
 ```bash
-npm run dev          # Start Vite dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env` file in the backend directory (optional):
-```env
-PORT=3000
-JWT_SECRET=your_jwt_secret_here
+npm run dev      # Vite dev server with HMR
+npm run build    # Production bundle
+npm run preview  # Preview production build locally
+npm run lint     # Run ESLint
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are very welcome!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create a Feature Branch: `git checkout -b feature/YourFeature`
+3. Commit your Changes: `git commit -m 'feat: add YourFeature'`
+4. Push to the Branch: `git push origin feature/YourFeature`
 5. Open a Pull Request
 
 ---
@@ -202,7 +242,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 **Sayandeep Das**
 
 - GitHub: [@sayandeepdas02](https://github.com/sayandeepdas02)
-- Project Link: [Plixa-Meetups](https://github.com/sayandeepdas02/Plixa-Meetups)
+- Project: [Plixa-Meetups](https://github.com/sayandeepdas02/Plixa-Meetups)
 
 ---
 
@@ -210,6 +250,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 - [React](https://reactjs.org/)
 - [Socket.io](https://socket.io/)
+- [WebRTC](https://webrtc.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Vite](https://vitejs.dev/)
 - [Express](https://expressjs.com/)
@@ -218,7 +259,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
 
-**Built with ❤️ using WebRTC for ultimate performance**
+**Built with ❤️ using WebRTC + Socket.IO for real-time collaboration**
 
 ⭐ Star this repo if you find it helpful!
 
