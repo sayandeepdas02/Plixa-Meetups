@@ -1,11 +1,14 @@
 // src/pages/Board.jsx
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
+import ChatPanel from "../components/chat/ChatPanel.jsx";
+import VideoGrid from "../components/webrtc/VideoGrid.jsx";
+import { useWebRTC } from "../hooks/useWebRTC.js";
 
 const BACKEND = import.meta.env.VITE_BACKEND || "http://127.0.0.1:8080";
-const SAMPLE_IMAGE_PATH = import.meta.env.VITE_SAMPLE || "/sample.png";
 
 const TOOLS = {
   PENCIL: "pencil",
@@ -24,10 +27,12 @@ function uid(prefix = "el") {
 
 export default function Board() {
   const canvasRef = useRef(null);
+  const canvasContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const socketRef = useRef(null);
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!roomId) {
@@ -42,6 +47,7 @@ export default function Board() {
   const baseImageRef = useRef(null);
   const baseImageSizeRef = useRef({ w: 0, h: 0 });
 
+  // --- Whiteboard state (unchanged) ---
   const [tool, setTool] = useState(TOOLS.PENCIL);
   const [color, setColor] = useState("#2563eb");
   const [thickness, setThickness] = useState(4);
@@ -51,14 +57,23 @@ export default function Board() {
   const [participants, setParticipants] = useState([]);
   const [showProperties, setShowProperties] = useState(true);
 
+  // --- Chat state ---
+  const [chatOpen, setChatOpen] = useState(() => window.innerWidth >= 768);
+  const [messages, setMessages] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // --- WebRTC ---
+  const webrtc = useWebRTC(socketRef, roomId);
+
   const getCtx = () => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     return canvas.getContext("2d", { willReadFrequently: true });
   };
 
+  // --- Socket setup ---
   useEffect(() => {
-    const s = io(BACKEND, { transports: ['websocket', 'polling'] });
+    const s = io(BACKEND, { transports: ["websocket", "polling"] });
     socketRef.current = s;
 
     s.on("connect", () => {
@@ -66,12 +81,12 @@ export default function Board() {
       if (roomId) s.emit("join", { boardId: roomId });
     });
 
+    // --- Whiteboard events (unchanged) ---
     s.on("whiteboard-state", (elements) => {
       elements.forEach((el) => drawElement(el));
       try { saveBaseImage(); } catch (err) { }
     });
 
-    // remote draw simple points (backwards-compatible)
     s.on("ondown", ({ x, y, color, thickness, tool }) => {
       const ctx = getCtx();
       if (!ctx) return;
@@ -109,13 +124,28 @@ export default function Board() {
       if (members) {
         setParticipants(members);
       } else {
-        // Fallback for older backend
-        setParticipants(prev => {
-          if (action === 'joined') return [...new Set([...prev, id])];
-          if (action === 'left') return prev.filter(p => p !== id);
+        setParticipants((prev) => {
+          if (action === "joined") return [...new Set([...prev, id])];
+          if (action === "left") return prev.filter((p) => p !== id);
           return prev;
         });
       }
+    });
+
+    // --- Chat events (new, isolated) ---
+    s.on("chat:history", (history) => {
+      setMessages(Array.isArray(history) ? history : []);
+    });
+
+    s.on("chat:message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+      // Increment unread badge when panel is closed
+      setChatOpen((currentlyOpen) => {
+        if (!currentlyOpen) {
+          setUnreadCount((c) => c + 1);
+        }
+        return currentlyOpen;
+      });
     });
 
     return () => {
@@ -124,9 +154,11 @@ export default function Board() {
     };
   }, [roomId]);
 
+  // --- Canvas resize: uses container width, not window.innerWidth ---
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = canvasContainerRef.current;
+    if (!canvas || !container) return;
     const ctx = getCtx();
     if (!ctx) return;
 
@@ -134,8 +166,9 @@ export default function Board() {
 
     const resize = () => {
       try {
-        const wCss = window.innerWidth;
-        const hCss = window.innerHeight;
+        // Use container dimensions (responds to chat panel open/close)
+        const wCss = container.clientWidth;
+        const hCss = container.clientHeight;
 
         const tmp = document.createElement("canvas");
         tmp.width = canvas.width;
@@ -157,11 +190,14 @@ export default function Board() {
     };
 
     resize();
-    window.addEventListener("resize", resize);
+
+    // ResizeObserver watches the container so chat panel toggle triggers resize
+    const ro = new ResizeObserver(resize);
+    ro.observe(container);
     canvas.style.touchAction = "none";
     try { saveBaseImage(); } catch (err) { }
 
-    return () => window.removeEventListener("resize", resize);
+    return () => ro.disconnect();
   }, []);
 
   function saveBaseImage() {
@@ -179,12 +215,18 @@ export default function Board() {
     const canvas = canvasRef.current;
     if (!ctx || !canvas) return;
     try {
-      if (baseImageRef.current && baseImageSizeRef.current.w === canvas.width && baseImageSizeRef.current.h === canvas.height) {
+      if (
+        baseImageRef.current &&
+        baseImageSizeRef.current.w === canvas.width &&
+        baseImageSizeRef.current.h === canvas.height
+      ) {
         ctx.putImageData(baseImageRef.current, 0, 0);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-    } catch (err) { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    } catch (err) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
   function drawElement(el) {
@@ -201,7 +243,15 @@ export default function Board() {
       ctx.strokeRect(el.x, el.y, el.w, el.h);
     } else if (el.type === "ellipse") {
       ctx.beginPath();
-      ctx.ellipse(el.x + el.w / 2, el.y + el.h / 2, Math.abs(el.w / 2), Math.abs(el.h / 2), 0, 0, Math.PI * 2);
+      ctx.ellipse(
+        el.x + el.w / 2,
+        el.y + el.h / 2,
+        Math.abs(el.w / 2),
+        Math.abs(el.h / 2),
+        0,
+        0,
+        Math.PI * 2
+      );
       ctx.stroke();
     } else if (el.type === "line" || el.type === "arrow") {
       ctx.beginPath();
@@ -209,13 +259,20 @@ export default function Board() {
       ctx.lineTo(el.x + el.w, el.y + el.h);
       ctx.stroke();
       if (el.type === "arrow") {
-        const x2 = el.x + el.w, y2 = el.y + el.h;
+        const x2 = el.x + el.w,
+          y2 = el.y + el.h;
         const angle = Math.atan2(y2 - el.y, x2 - el.x);
         const len = 12;
         ctx.beginPath();
         ctx.moveTo(x2, y2);
-        ctx.lineTo(x2 - len * Math.cos(angle - Math.PI / 6), y2 - len * Math.sin(angle - Math.PI / 6));
-        ctx.lineTo(x2 - len * Math.cos(angle + Math.PI / 6), y2 - len * Math.sin(angle + Math.PI / 6));
+        ctx.lineTo(
+          x2 - len * Math.cos(angle - Math.PI / 6),
+          y2 - len * Math.sin(angle - Math.PI / 6)
+        );
+        ctx.lineTo(
+          x2 - len * Math.cos(angle + Math.PI / 6),
+          y2 - len * Math.sin(angle + Math.PI / 6)
+        );
         ctx.closePath();
         ctx.fillStyle = el.stroke || "#000";
         ctx.fill();
@@ -246,19 +303,49 @@ export default function Board() {
 
   function shapeElementFromPoints(toolName, a, b, colorVal, widthVal) {
     if (!a || !b) return null;
-    const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y);
-    const w = Math.abs(b.x - a.x), h = Math.abs(b.y - a.y);
-    if (toolName === TOOLS.RECT) return { id: uid("rect"), type: "rect", x, y, w, h, stroke: colorVal, strokeWidth: widthVal };
+    const x = Math.min(a.x, b.x),
+      y = Math.min(a.y, b.y);
+    const w = Math.abs(b.x - a.x),
+      h = Math.abs(b.y - a.y);
+    if (toolName === TOOLS.RECT)
+      return { id: uid("rect"), type: "rect", x, y, w, h, stroke: colorVal, strokeWidth: widthVal };
     if (toolName === TOOLS.SQUARE) {
       const size = Math.max(w, h);
-      return { id: uid("square"), type: "rect", x: a.x <= b.x ? a.x : a.x - size, y: a.y <= b.y ? a.y : a.y - size, w: size, h: size, stroke: colorVal, strokeWidth: widthVal };
+      return {
+        id: uid("square"),
+        type: "rect",
+        x: a.x <= b.x ? a.x : a.x - size,
+        y: a.y <= b.y ? a.y : a.y - size,
+        w: size,
+        h: size,
+        stroke: colorVal,
+        strokeWidth: widthVal,
+      };
     }
     if (toolName === TOOLS.CIRCLE) {
       const size = Math.max(w, h);
-      return { id: uid("circle"), type: "ellipse", x: a.x <= b.x ? a.x : a.x - size, y: a.y <= b.y ? a.y : a.y - size, w: size, h: size, stroke: colorVal, strokeWidth: widthVal };
+      return {
+        id: uid("circle"),
+        type: "ellipse",
+        x: a.x <= b.x ? a.x : a.x - size,
+        y: a.y <= b.y ? a.y : a.y - size,
+        w: size,
+        h: size,
+        stroke: colorVal,
+        strokeWidth: widthVal,
+      };
     }
     if (toolName === TOOLS.LINE || toolName === TOOLS.ARROW) {
-      return { id: uid(toolName), type: toolName, x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y, stroke: colorVal, strokeWidth: widthVal };
+      return {
+        id: uid(toolName),
+        type: toolName,
+        x: a.x,
+        y: a.y,
+        w: b.x - a.x,
+        h: b.y - a.y,
+        stroke: colorVal,
+        strokeWidth: widthVal,
+      };
     }
     return null;
   }
@@ -332,11 +419,22 @@ export default function Board() {
     if (!ctx) return;
 
     if (tool === TOOLS.PENCIL) {
-      const el = { id: uid("pencil"), type: "pencil", path: pathBufferRef.current.slice(), stroke: color, strokeWidth: thickness };
+      const el = {
+        id: uid("pencil"),
+        type: "pencil",
+        path: pathBufferRef.current.slice(),
+        stroke: color,
+        strokeWidth: thickness,
+      };
       socketRef.current?.emit("element:create", { element: el });
     } else if (tool === TOOLS.ERASER) {
       ctx.globalCompositeOperation = "source-over";
-      const el = { id: uid("eraser"), type: "eraser", path: pathBufferRef.current.slice(), strokeWidth: eraserSize };
+      const el = {
+        id: uid("eraser"),
+        type: "eraser",
+        path: pathBufferRef.current.slice(),
+        strokeWidth: eraserSize,
+      };
       socketRef.current?.emit("element:create", { element: el });
     } else {
       const el = shapeElementFromPoints(tool, startPosRef.current, pos, color, thickness);
@@ -386,10 +484,28 @@ export default function Board() {
     reader.readAsDataURL(file);
   }
 
+  // --- Chat send handler ---
+  const handleChatSend = useCallback(
+    (message) => {
+      if (!socketRef.current || !socketRef.current.connected) return;
+      const senderName = user?.name || "Anonymous";
+      socketRef.current.emit("chat:send", { message, senderName });
+    },
+    [user]
+  );
+
+  // --- Chat panel toggle ---
+  const handleChatToggle = useCallback(() => {
+    setChatOpen((prev) => {
+      if (!prev) setUnreadCount(0); // clear badge when opening
+      return !prev;
+    });
+  }, []);
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-bg-light font-sans text-text-main">
       {/* Top Header */}
-      <header className="h-14 border-b border-border bg-white flex items-center justify-between px-4 z-40 shadow-sm">
+      <header className="h-14 border-b border-border bg-white flex items-center justify-between px-4 z-40 shadow-sm flex-none">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src={logo} alt="Logo" className="h-7 w-auto" />
@@ -398,14 +514,21 @@ export default function Board() {
           <div className="h-4 w-px bg-border mx-2"></div>
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-navy truncate max-w-[150px]">Untitled Board</span>
-            <span className="px-1.5 py-0.5 rounded bg-bg-light text-[10px] font-bold text-text-muted border border-border">DRAFT</span>
+            <span className="px-1.5 py-0.5 rounded bg-bg-light text-[10px] font-bold text-text-muted border border-border">
+              DRAFT
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Participants */}
           <div className="hidden md:flex items-center -space-x-2">
             {participants.map((pid, i) => (
-              <div key={pid} className="w-8 h-8 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border" title={pid}>
+              <div
+                key={pid}
+                className="w-8 h-8 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border"
+                title={pid}
+              >
                 {pid === socketId ? "You" : `U${i + 1}`}
               </div>
             ))}
@@ -415,123 +538,197 @@ export default function Board() {
               </div>
             )}
           </div>
-          <div className="h-4 w-px bg-border mx-1"></div>
+
+          <div className="h-4 w-px bg-border"></div>
+
+          {/* Share */}
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              alert("Link copied!");
-            }}
+            onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }}
             className="btn-primary py-1.5 px-4 text-xs"
           >
             Share
           </button>
+
+          {/* Export */}
           <button onClick={handleSave} className="p-2 hover:bg-bg-light rounded-lg transition-colors" title="Export as PNG">
             <IconDownload className="w-4 h-4" />
+          </button>
+
+          {/* Join Call */}
+          <button
+            onClick={webrtc.isInCall ? webrtc.leaveCall : webrtc.joinCall}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${webrtc.isInCall
+              ? 'bg-red-500 hover:bg-red-600 text-white'
+              : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
+            title={webrtc.isInCall ? 'Leave call' : 'Join voice & video call'}
+          >
+            <IconCallBtn className="w-3.5 h-3.5" />
+            {webrtc.isInCall ? 'Leave' : 'Join Call'}
+          </button>
+
+          {/* Chat Toggle */}
+          <button
+            onClick={handleChatToggle}
+            className={`relative p-2 rounded-lg transition-colors ${chatOpen ? "bg-primary/10 text-primary" : "hover:bg-bg-light text-text-muted hover:text-navy"}`}
+            title={chatOpen ? "Close chat" : "Open chat"}
+          >
+            <IconChat className="w-4 h-4" />
+            {!chatOpen && unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
         </div>
       </header>
 
-      <main className="flex-1 relative overflow-hidden">
-        {/* Left Floating Toolbar */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
-          <div className="glass-card p-1.5 flex flex-col gap-1 shadow-premium border-border">
-            <ToolBtn active={tool === TOOLS.PENCIL} onClick={() => setTool(TOOLS.PENCIL)} icon={<IconPencil />} title="Pencil (P)" />
-            <ToolBtn active={tool === TOOLS.ERASER} onClick={() => setTool(TOOLS.ERASER)} icon={<IconEraser />} title="Eraser (E)" />
-            <div className="h-px bg-border my-1 mx-2"></div>
-            <ToolBtn active={tool === TOOLS.RECT} onClick={() => setTool(TOOLS.RECT)} icon={<IconSquare />} title="Rectangle (R)" />
-            <ToolBtn active={tool === TOOLS.CIRCLE} onClick={() => setTool(TOOLS.CIRCLE)} icon={<IconCircle />} title="Circle (O)" />
-            <ToolBtn active={tool === TOOLS.ARROW} onClick={() => setTool(TOOLS.ARROW)} icon={<IconArrow />} title="Arrow (A)" />
-            <ToolBtn active={tool === TOOLS.LINE} onClick={() => setTool(TOOLS.LINE)} icon={<IconLine />} title="Line (L)" />
-            <div className="h-px bg-border my-1 mx-2"></div>
-            <ToolBtn active={tool === TOOLS.TEXT} onClick={() => setTool(TOOLS.TEXT)} icon={<IconText />} title="Text (T)" />
-            <label className="p-2 hover:bg-primary/5 rounded-lg cursor-pointer transition-colors group">
-              <IconImage className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleUploadChange} className="hidden" />
-            </label>
+      {/* Body: canvas area + chat panel side by side */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Canvas Area */}
+        <main className="flex-1 relative overflow-hidden">
+          {/* Left Floating Toolbar */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
+            <div className="glass-card p-1.5 flex flex-col gap-1 shadow-premium border-border">
+              <ToolBtn active={tool === TOOLS.PENCIL} onClick={() => setTool(TOOLS.PENCIL)} icon={<IconPencil />} title="Pencil (P)" />
+              <ToolBtn active={tool === TOOLS.ERASER} onClick={() => setTool(TOOLS.ERASER)} icon={<IconEraser />} title="Eraser (E)" />
+              <div className="h-px bg-border my-1 mx-2"></div>
+              <ToolBtn active={tool === TOOLS.RECT} onClick={() => setTool(TOOLS.RECT)} icon={<IconSquare />} title="Rectangle (R)" />
+              <ToolBtn active={tool === TOOLS.CIRCLE} onClick={() => setTool(TOOLS.CIRCLE)} icon={<IconCircle />} title="Circle (O)" />
+              <ToolBtn active={tool === TOOLS.ARROW} onClick={() => setTool(TOOLS.ARROW)} icon={<IconArrow />} title="Arrow (A)" />
+              <ToolBtn active={tool === TOOLS.LINE} onClick={() => setTool(TOOLS.LINE)} icon={<IconLine />} title="Line (L)" />
+              <div className="h-px bg-border my-1 mx-2"></div>
+              <ToolBtn active={tool === TOOLS.TEXT} onClick={() => setTool(TOOLS.TEXT)} icon={<IconText />} title="Text (T)" />
+              <label className="p-2 hover:bg-primary/5 rounded-lg cursor-pointer transition-colors group">
+                <IconImage className="w-5 h-5 text-text-muted group-hover:text-primary transition-colors" />
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleUploadChange} className="hidden" />
+              </label>
+            </div>
+
+            <button onClick={handleClear} className="glass-card p-2 hover:bg-red-50 text-red-500 border-red-100 transition-colors" title="Clear Canvas">
+              <IconTrash className="w-5 h-5" />
+            </button>
           </div>
 
-          <button onClick={handleClear} className="glass-card p-2 hover:bg-red-50 text-red-500 border-red-100 transition-colors" title="Clear Canvas">
-            <IconTrash className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Property Bar (Bottom Center) */}
-        {showProperties && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
-            <div className="glass-card px-4 py-2 flex items-center gap-6 shadow-premium border-border animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Stroke</span>
-                <div className="flex items-center gap-1.5">
-                  {['#000000', '#2563eb', '#dc2626', '#16a34a', '#f59e0b'].map(c => (
-                    <button
-                      key={c}
-                      onClick={() => setColor(c)}
-                      className={`w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 ${color === c ? 'border-navy ring-1 ring-offset-1 ring-navy' : 'border-transparent'}`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                  <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-5 h-5 rounded-full border-0 p-0 overflow-hidden cursor-pointer" />
-                </div>
-              </div>
-              <div className="h-6 w-px bg-border"></div>
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Width</span>
-                <select value={thickness} onChange={(e) => setThickness(Number(e.target.value))} className="bg-transparent text-sm font-medium outline-none cursor-pointer hover:text-primary transition-colors">
-                  <option value={2}>Thin</option>
-                  <option value={4}>Regular</option>
-                  <option value={8}>Bold</option>
-                  <option value={12}>Heavy</option>
-                </select>
-              </div>
-              {tool === TOOLS.ERASER && (
-                <>
-                  <div className="h-6 w-px bg-border"></div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Size</span>
-                    <select value={eraserSize} onChange={(e) => setEraserSize(Number(e.target.value))} className="bg-transparent text-sm font-medium outline-none cursor-pointer">
-                      <option value={16}>Small</option>
-                      <option value={32}>Medium</option>
-                      <option value={64}>Large</option>
-                    </select>
+          {/* Property Bar (Bottom Center) */}
+          {showProperties && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
+              <div className="glass-card px-4 py-2 flex items-center gap-6 shadow-premium border-border animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Stroke</span>
+                  <div className="flex items-center gap-1.5">
+                    {["#000000", "#2563eb", "#dc2626", "#16a34a", "#f59e0b"].map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => setColor(c)}
+                        className={`w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 ${color === c ? "border-navy ring-1 ring-offset-1 ring-navy" : "border-transparent"}`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                    <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-5 h-5 rounded-full border-0 p-0 overflow-hidden cursor-pointer" />
                   </div>
-                </>
-              )}
+                </div>
+                <div className="h-6 w-px bg-border"></div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Width</span>
+                  <select value={thickness} onChange={(e) => setThickness(Number(e.target.value))} className="bg-transparent text-sm font-medium outline-none cursor-pointer hover:text-primary transition-colors">
+                    <option value={2}>Thin</option>
+                    <option value={4}>Regular</option>
+                    <option value={8}>Bold</option>
+                    <option value={12}>Heavy</option>
+                  </select>
+                </div>
+                {tool === TOOLS.ERASER && (
+                  <>
+                    <div className="h-6 w-px bg-border"></div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Size</span>
+                      <select value={eraserSize} onChange={(e) => setEraserSize(Number(e.target.value))} className="bg-transparent text-sm font-medium outline-none cursor-pointer">
+                        <option value={16}>Small</option>
+                        <option value={32}>Medium</option>
+                        <option value={64}>Large</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Zoom (Bottom Right) */}
+          <div className="absolute bottom-6 right-6 z-40 flex items-center gap-2">
+            <div className="glass-card flex items-center p-1 border-border shadow-soft">
+              <button className="p-1.5 hover:bg-bg-light rounded transition-colors"><IconMinus className="w-3.5 h-3.5" /></button>
+              <span className="px-2 text-[10px] font-bold text-text-muted w-12 text-center">{zoomLabel}</span>
+              <button className="p-1.5 hover:bg-bg-light rounded transition-colors"><IconPlus className="w-3.5 h-3.5" /></button>
             </div>
           </div>
-        )}
 
-        {/* Zoom & Helper (Bottom Right) */}
-        <div className="absolute bottom-6 right-6 z-40 flex items-center gap-2">
-          <div className="glass-card flex items-center p-1 border-border shadow-soft">
-            <button className="p-1.5 hover:bg-bg-light rounded transition-colors"><IconMinus className="w-3.5 h-3.5" /></button>
-            <span className="px-2 text-[10px] font-bold text-text-muted w-12 text-center">{zoomLabel}</span>
-            <button className="p-1.5 hover:bg-bg-light rounded transition-colors"><IconPlus className="w-3.5 h-3.5" /></button>
+          {/* Canvas */}
+          <div ref={canvasContainerRef} className="absolute inset-0 z-0 bg-white">
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 0)", backgroundSize: "24px 24px" }}></div>
+            <canvas
+              ref={canvasRef}
+              className="w-full h-full block cursor-crosshair"
+              onPointerDown={pointerDown}
+              onPointerMove={pointerMove}
+              onPointerUp={pointerUp}
+              onPointerLeave={pointerUp}
+            />
           </div>
-        </div>
+        </main>
 
-        {/* Canvas Area */}
-        <div className="absolute inset-0 z-0 bg-white group">
-          {/* Subtle Grid Pattern */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
-          <canvas
-            ref={canvasRef}
-            className="w-full h-full block cursor-crosshair"
-            onPointerDown={pointerDown}
-            onPointerMove={pointerMove}
-            onPointerUp={pointerUp}
-            onPointerLeave={pointerUp}
-          />
-        </div>
-      </main>
+        {/* Chat Panel */}
+        <ChatPanel
+          open={chatOpen}
+          onClose={() => setChatOpen(false)}
+          messages={messages}
+          socketId={socketId}
+          connected={!!socketId}
+          onSend={handleChatSend}
+        />
+      </div>
 
-      {/* Connection Status Footnote */}
-      <footer className="h-6 bg-white border-t border-border flex items-center justify-between px-3 text-[10px] text-text-muted z-40 font-medium">
+      {/* WebRTC Video Grid — floating, absolute, does not affect layout */}
+      {webrtc.isInCall && (
+        <VideoGrid
+          localStream={webrtc.localStream}
+          remoteStreams={webrtc.remoteStreams}
+          isMicOn={webrtc.isMicOn}
+          isCamOn={webrtc.isCamOn}
+          onMic={webrtc.toggleMic}
+          onCam={webrtc.toggleCam}
+          onLeave={webrtc.leaveCall}
+          userName={user?.name || 'You'}
+        />
+      )}
+
+      {/* WebRTC permission / connection error toast */}
+      {webrtc.callError && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 bg-red-600 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-4">
+          <IconAlert className="w-4 h-4 flex-none" />
+          <span>{webrtc.callError}</span>
+          <button
+            onClick={() => webrtc.joinCall.toString()} // dismiss — callError clears on next attempt
+            className="ml-2 text-white/70 hover:text-white transition-colors"
+            title="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+
+
+      {/* Footer */}
+      <footer className="h-6 bg-white border-t border-border flex items-center justify-between px-3 text-[10px] text-text-muted z-40 font-medium flex-none">
         <div className="flex items-center gap-2">
-          <span className={`w-1.5 h-1.5 rounded-full ${socketId ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`}></span>
-          {socketId ? `Connected as ${socketId}` : 'Connecting...'}
+          <span className={`w-1.5 h-1.5 rounded-full ${socketId ? "bg-green-500" : "bg-red-500 animate-pulse"}`}></span>
+          {socketId ? `Connected as ${socketId.slice(0, 8)}…` : "Connecting..."}
         </div>
         <div>
-          Press <kbd className="font-sans px-1 rounded bg-bg-light border border-border">V</kbd> for Select • <kbd className="font-sans px-1 rounded bg-bg-light border border-border">P</kbd> for Pencil
+          Press <kbd className="font-sans px-1 rounded bg-bg-light border border-border">V</kbd> for Select •{" "}
+          <kbd className="font-sans px-1 rounded bg-bg-light border border-border">P</kbd> for Pencil
         </div>
       </footer>
     </div>
@@ -543,10 +740,10 @@ function ToolBtn({ active, onClick, icon, title }) {
   return (
     <button
       onClick={onClick}
-      className={`p-2 rounded-lg transition-all transform active:scale-90 ${active ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:bg-primary/5 hover:text-primary'}`}
+      className={`p-2 rounded-lg transition-all transform active:scale-90 ${active ? "bg-primary text-white shadow-lg" : "text-text-muted hover:bg-primary/5 hover:text-primary"}`}
       title={title}
     >
-      {React.cloneElement(icon, { className: `w-5 h-5 ${active ? 'text-white' : ''}` })}
+      {React.cloneElement(icon, { className: `w-5 h-5 ${active ? "text-white" : ""}` })}
     </button>
   );
 }
@@ -564,3 +761,6 @@ const IconDownload = ({ className }) => <svg fill="none" viewBox="0 0 24 24" str
 const IconTrash = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
 const IconPlus = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>;
 const IconMinus = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" /></svg>;
+const IconChat = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
+const IconCallBtn = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M15.05 5A5 5 0 0119 8.95M15.05 1A9 9 0 0123 8.94m-1 7.98v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>;
+const IconAlert = ({ className }) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>;
