@@ -2,18 +2,22 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import heroImage from '../assets/hero-gantt-chart.png';
+import { FeatureDemo } from '../components/feature-demo';
+import { HeroDemo } from '../components/hero-demo';
+import { Pricing as NewPricing } from '../components/ui/pricing-cards';
+import { TestimonialDemo } from '../components/testimonial-demo';
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-white font-sans text-text-main selection:bg-primary/10 selection:text-primary">
       <Navbar />
       <main>
-        <Hero />
-        <ValueProps />
+        <HeroDemo />
+        <FeatureDemo />
         <HowItWorks />
         <UseCases />
-        <Testimonials />
-        <Pricing />
+        <TestimonialDemo />
+        <NewPricing />
         <BottomCTA />
       </main>
       <Footer />
@@ -51,104 +55,9 @@ function Navbar() {
   );
 }
 
-function Hero() {
-  return (
-    <section className="relative pt-20 pb-24 lg:pt-32 lg:pb-40 overflow-hidden text-center lg:text-left">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              Now with WebRTC Low-Latency
-            </div>
-            <h1 className="text-5xl font-extrabold tracking-tight text-navy sm:text-6xl md:text-7xl leading-[1.1]">
-              Real-Time Collaborative <br />
-              <span className="text-primary italic">Whiteboard</span>
-            </h1>
-            <p className="mt-8 text-xl text-text-muted leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Instant collaboration for remote teams and educators. Zero lag, no downloads, and crystal clear precision—built with WebRTC.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link to="/board" className="btn-primary text-base px-8 py-4">
-                Create a Board Free
-              </Link>
-              <a href="#how-it-works" className="btn-secondary text-base px-8 py-4">
-                See How It Works
-              </a>
-            </div>
-            <div className="mt-10 flex items-center justify-center lg:justify-start gap-4 text-sm text-text-muted">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <img
-                    key={i}
-                    src={`https://i.pravatar.cc/100?u=${i}`}
-                    className="w-8 h-8 rounded-full border-2 border-white ring-1 ring-border"
-                    alt="User"
-                  />
-                ))}
-              </div>
-              <span>Trusted by 5,000+ teams</span>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="relative z-10 glass-card p-2 lg:p-4 rotate-1 lg:rotate-2 hover:rotate-0 transition-transform duration-500">
-              <img
-                src={heroImage}
-                alt="Social Media Strategy Development Gantt Chart"
-                className="rounded-xl shadow-inner bg-white w-full aspect-[16/10] object-contain"
-              />
-            </div>
-            {/* Geometric accents */}
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
-            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-navy/5 rounded-full blur-3xl -z-10 animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function ValueProps() {
-  return (
-    <section id="features" className="py-24 bg-bg-light">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">
-            Everything you need, nothing you don't.
-          </h2>
-          <p className="mt-4 text-lg text-text-muted leading-relaxed">
-            We stripped away the complexity to give you the most fluid whiteboarding experience on the web.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <FeatureCard
-            icon={<IconCursor className="w-8 h-8" />}
-            title="Real-time Sync"
-            description="See cursors and strokes update in milliseconds with our WebRTC mesh network."
-          />
-          <FeatureCard
-            icon={<IconShapes className="w-8 h-8" />}
-            title="Pro Tools"
-            description="Complete set of shapes, arrows, and text tools for professional-grade diagrams."
-          />
-          <FeatureCard
-            icon={<IconShield className="w-8 h-8" />}
-            title="Encrypted"
-            description="Your boards are private and encrypted. No data is stored on our servers unless you save it."
-          />
-          <FeatureCard
-            icon={<IconZap className="w-8 h-8" />}
-            title="Browser Based"
-            description="No apps to download. Share a link and your team is in the board instantly."
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
+
+
 
 function HowItWorks() {
   return (
@@ -220,81 +129,9 @@ function UseCases() {
   );
 }
 
-function Testimonials() {
-  return (
-    <section id="testimonials" className="py-24 bg-navy text-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center text-white">
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">Loved by innovators</h2>
-          <div className="flex justify-center gap-1 text-primary">
-            {[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="w-6 h-6 fill-current" />)}
-          </div>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          <TestimonialCard
-            quote="The lowest latency I've ever seen. It actually feels like we're drawing on the same physical board."
-            author="Alex Rivers"
-            role="Design Lead at Meta"
-          />
-          <TestimonialCard
-            quote="Plixa has completely transformed how I teach system design. My students can participate actively."
-            author="Dr. Sarah Jenkins"
-            role="CS Professor"
-          />
-          <TestimonialCard
-            quote="Clean, minimal, and insanely fast. It's the only tool my team uses for our weekly syncs."
-            author="James Carter"
-            role="CTO, StartupX"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function Pricing() {
-  return (
-    <section id="pricing" className="py-24 bg-white">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Simple, honest pricing</h2>
-          <p className="mt-4 text-lg text-text-muted">Start for free, upgrade as you grow.</p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="p-10 rounded-3xl border border-border bg-white flex flex-col items-center">
-            <h3 className="text-lg font-bold text-navy">Personal</h3>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-bold tracking-tight text-navy">$0</span>
-              <span className="text-sm font-semibold text-text-muted">/forever</span>
-            </div>
-            <p className="mt-6 text-text-muted text-center">Perfect for students and occasional collaborators.</p>
-            <ul className="mt-8 space-y-4 text-sm text-text-muted w-full">
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Infinite Canvas</li>
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Up to 3 Participants</li>
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Real-time Chat</li>
-            </ul>
-            <Link to="/auth" className="btn-secondary w-full mt-10">Get Started</Link>
-          </div>
-          <div className="p-10 rounded-3xl border-2 border-primary bg-white shadow-premium relative flex flex-col items-center">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider">Most Popular</div>
-            <h3 className="text-lg font-bold text-navy">Pro Team</h3>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-bold tracking-tight text-navy">$12</span>
-              <span className="text-sm font-semibold text-text-muted">/month</span>
-            </div>
-            <p className="mt-6 text-text-muted text-center">Everything in personal, plus advanced team features.</p>
-            <ul className="mt-8 space-y-4 text-sm text-text-muted w-full">
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Unlimited Participants</li>
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Cloud Persistence</li>
-              <li className="flex gap-3"><IconCheck className="w-5 h-5 text-primary" /> Priority Support</li>
-            </ul>
-            <Link to="/auth" className="btn-primary w-full mt-10">Start 14-day Trial</Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+
+
 
 function BottomCTA() {
   return (
@@ -389,18 +226,7 @@ function Step({ number, title, description }) {
   );
 }
 
-function TestimonialCard({ quote, author, role }) {
-  return (
-    <div className="p-8 rounded-2xl bg-white/5 border border-white/10 text-left">
-      <div className="text-primary text-4xl mb-6 font-serif opacity-50">“</div>
-      <p className="text-lg italic text-slate-300 mb-8 leading-relaxed">{quote}</p>
-      <div>
-        <div className="font-bold text-white">{author}</div>
-        <div className="text-sm text-slate-400">{role}</div>
-      </div>
-    </div>
-  );
-}
+
 
 
 function IconCursor(props) {
