@@ -6,10 +6,15 @@ import { FeatureDemo } from '../components/feature-demo';
 import { HeroDemo } from '../components/hero-demo';
 import { Pricing as NewPricing } from '../components/ui/pricing-cards';
 import { TestimonialDemo } from '../components/testimonial-demo';
+import { Button } from '@/components/ui/button';
+import { SectionWrapper } from '../components/layout/SectionWrapper';
+import { Container } from '../components/layout/Container';
+import { HeadingBlock } from '../components/layout/HeadingBlock';
+import { ThemeToggle } from '../components/theme-toggle';
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white font-sans text-text-main selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/10 selection:text-primary">
       <Navbar />
       <main>
         <HeroDemo />
@@ -28,26 +33,29 @@ export default function Landing() {
 
 function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <img src={logo} alt="Plixa Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold tracking-tight text-navy">Plixa</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">Plixa</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">How It Works</a>
-            <a href="#pricing" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">Pricing</a>
-            <a href="#use-cases" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">Use Cases</a>
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</a>
+            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+            <a href="#use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Use Cases</a>
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/auth" className="hidden sm:block text-sm font-semibold text-text-main hover:text-primary transition-colors">
+          <ThemeToggle />
+          <Link to="/auth" className="hidden sm:block text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
             Sign In
           </Link>
-          <Link to="/board" className="btn-primary py-2 px-5 text-sm">
-            Start Whiteboarding
+          <Link to="/board">
+            <Button>
+              Start Whiteboarding
+            </Button>
           </Link>
         </div>
       </div>
@@ -61,10 +69,14 @@ function Navbar() {
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 bg-white overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl mb-16">Set up in seconds</h2>
-        <div className="grid md:grid-cols-3 gap-12 relative">
+    <SectionWrapper variant="default" id="how-it-works">
+      <Container>
+        <HeadingBlock 
+          title="Set up in seconds"
+          subtitle="No complex configurations or onboarding. Just instantly collaborative whiteboards mapped to immutable links."
+          align="center"
+        />
+        <div className="grid md:grid-cols-3 gap-12 relative mt-24">
           <Step
             number="01"
             title="Create a Board"
@@ -81,126 +93,141 @@ function HowItWorks() {
             description="Watch as everyone's cursors appear. Brainstorm and iterate together in real-time."
           />
           {/* Connector line for desktop */}
-          <div className="hidden lg:block absolute top-12 left-[15%] right-[15%] h-px border-t border-dashed border-border -z-10"></div>
+          <div className="hidden md:block absolute top-8 left-[16%] right-[16%] h-px border-t-2 border-dashed border-border -z-10"></div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </SectionWrapper>
   );
 }
 
 function UseCases() {
   return (
-    <section id="use-cases" className="py-24 bg-bg-light border-y border-border">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <SectionWrapper variant="muted" id="use-cases">
+      <Container>
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Built for the future of work</h2>
-            <p className="mt-6 text-lg text-text-muted leading-relaxed">
-              Whether you're teaching a class or architecting a software system, Plixa provides the perfect medium for visual communication.
-            </p>
-            <div className="mt-10 space-y-6">
+            <HeadingBlock 
+              title="Built for the future of work"
+              subtitle="Whether you're teaching a class or architecting a software system, Plixa provides the perfect medium."
+              align="left"
+            />
+            <div className="mt-12 space-y-8">
               {[
-                { title: 'Remote Teams', text: 'Run retrospectives and plan sprints with ease.' },
-                { title: 'Educators & Tutors', text: 'Bridge the distance gap with interactive lessons.' },
-                { title: 'System Design', text: 'Architect complex systems for technical interviews.' }
+                { title: 'Remote Teams', text: 'Run retrospectives and plan sprints with ease using visual spatial layouts.' },
+                { title: 'Educators & Tutors', text: 'Bridge the distance gap with interactive, infinite-canvas lessons.' },
+                { title: 'System Design', text: 'Architect complex systems for technical interviews in real-time.' }
               ].map((item, idx) => (
-                <div key={idx} className="flex gap-4">
-                  <div className="flex-none w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <IconCheck className="w-4 h-4 text-primary" />
+                <div key={idx} className="flex gap-6 group cursor-default">
+                  <div className="flex-none w-10 h-10 rounded-xl bg-primary/5 dark:bg-primary/10 shadow-sm border border-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <IconCheck className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-navy">{item.title}</h3>
-                    <p className="text-text-muted">{item.text}</p>
+                    <h3 className="font-medium text-lg tracking-tight mb-1">{item.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{item.text}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="glass-card overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
-              alt="Use Case"
-              className="w-full h-96 object-cover"
-            />
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-400/20 rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <div className="relative bg-card border border-border/60 rounded-[2rem] p-4 shadow-2xl overflow-hidden aspect-[4/3]">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-blue-50 dark:from-primary/5 dark:to-blue-950/30 flex items-center justify-center">
+                 <div className="w-3/4 h-3/4 rounded-xl border border-border bg-card shadow-sm flex flex-col overflow-hidden">
+                    <div className="h-8 border-b border-border/50 bg-muted/50 flex items-center px-3 gap-2">
+                       <div className="w-2.5 h-2.5 rounded-full bg-primary/30"></div><div className="w-2.5 h-2.5 rounded-full bg-border"></div>
+                    </div>
+                    <div className="flex-1 p-6 relative">
+                       <div className="w-32 h-20 bg-primary/5 rounded-lg absolute top-6 left-6 border border-primary/10"></div>
+                       <div className="w-24 h-24 bg-primary/5 rounded-full absolute top-12 right-12 border border-primary/10"></div>
+                       <svg className="absolute inset-0 w-full h-full text-primary/20 stroke-2" fill="none"><path d="M152 70 Q 200 70 240 100" stroke="currentColor"/></svg>
+                    </div>
+                 </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </SectionWrapper>
   );
 }
 
-
-
-
-
 function BottomCTA() {
   return (
-    <section className="py-24 bg-bg-light">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 lg:flex lg:items-center lg:justify-between glass-card p-12 overflow-hidden relative">
-        <div className="relative z-10 lg:max-w-xl">
-          <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">Ready to start collaborating?</h2>
-          <p className="mt-4 text-lg text-text-muted">Join thousands of creators who bring their ideas to life with Plixa.</p>
-        </div>
-        <div className="mt-10 lg:mt-0 lg:flex-shrink-0 relative z-10">
-          <Link to="/board" className="btn-primary text-lg px-10 py-4">Start Whiteboarding Free</Link>
-        </div>
-        {/* Decorative circle */}
-        <div className="absolute right-0 bottom-0 w-64 h-64 bg-primary/5 rounded-full translate-x-1/2 translate-y-1/2 -z-0"></div>
+    <SectionWrapper variant="dark" className="bg-[#0b0f19] p-0 lg:p-0">
+      <div className="py-20 lg:py-32">
+        <Container>
+          <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/50 p-12 md:p-20 text-center shadow-2xl">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#3b82f620_0%,transparent_60%)]"></div>
+            <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+              <h2 className="text-4xl md:text-6xl tracking-tighter text-slate-50 font-medium mb-6">
+                Ready to start collaborating?
+              </h2>
+              <p className="text-xl text-slate-400 leading-relaxed mb-10 balance-text">
+                Join thousands of creators who bring their ideas to life with Plixa. No credit card required.
+              </p>
+              <Link to="/board">
+                 <Button size="lg" className="h-14 px-8 text-lg shadow-[0_4px_16px_rgba(37,99,235,0.4)]">
+                   Start Whiteboarding Free
+                 </Button>
+              </Link>
+            </div>
+          </div>
+        </Container>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
 function Footer() {
   return (
-    <footer className="bg-white border-t border-border py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <footer className="bg-background border-t border-border py-16">
+      <Container>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 lg:gap-24 mb-16">
           <div className="col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-6">
+            <Link to="/" className="flex items-center gap-2 mb-6 transition-opacity hover:opacity-80">
               <img src={logo} alt="Plixa Logo" className="h-8 w-auto" />
-              <span className="text-xl font-bold tracking-tight text-navy">Plixa</span>
+              <span className="text-xl font-medium tracking-tight text-foreground">Plixa</span>
             </Link>
-            <p className="text-text-muted text-sm max-w-xs leading-relaxed">
-              Professional real-time collaboration for the modern web. Built with WebRTC for ultimate performance and security.
+            <p className="text-muted-foreground text-sm max-w-xs leading-relaxed">
+              Professional real-time collaboration for the modern web. Built for speed, performance, and ultimate security.
             </p>
           </div>
           <div>
-            <h3 className="font-bold text-navy h-8 flex items-center mb-4">Product</h3>
-            <ul className="space-y-3 text-sm text-text-muted">
-              <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="hover:text-primary transition-colors">How It Works</a></li>
-              <li><a href="#testimonials" className="hover:text-primary transition-colors">Testimonials</a></li>
-              <li><a href="#pricing" className="hover:text-primary transition-colors">Pricing</a></li>
+            <h3 className="font-medium text-foreground mb-4">Product</h3>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+              <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
+              <li><a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a></li>
+              <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-bold text-navy h-8 flex items-center mb-4">Company</h3>
-            <ul className="space-y-3 text-sm text-text-muted">
-              <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+            <h3 className="font-medium text-foreground mb-4">Company</h3>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+              <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+              <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-text-muted">
-            &copy; {new Date().getFullYear()} Plixa. All rights reserved.
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Plixa Inc. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="/board/global" target="_blank" rel="noopener noreferrer" aria-label="Twitter Profile">
-              <IconTwitter className="w-5 h-5 text-text-muted hover:text-primary cursor-pointer transition-colors" />
+              <IconTwitter className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
             </a>
             <a href="https://github.com/sayandeepdas02/Plixa-Meetups" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
-              <IconGithub className="w-5 h-5 text-text-muted hover:text-primary cursor-pointer transition-colors" />
+              <IconGithub className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
             </a>
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }
-
 
 function FeatureCard({ title, description, icon }) {
   return (
@@ -209,19 +236,19 @@ function FeatureCard({ title, description, icon }) {
         {icon}
       </div>
       <h3 className="text-xl font-bold text-navy mb-3">{title}</h3>
-      <p className="text-text-muted leading-relaxed text-sm">{description}</p>
+      <p className="text-muted-foreground leading-relaxed text-sm">{description}</p>
     </div>
   );
 }
 
 function Step({ number, title, description }) {
   return (
-    <div className="relative group">
-      <div className="w-16 h-16 rounded-2xl bg-white shadow-soft border border-border flex items-center justify-center text-primary font-bold text-xl mx-auto mb-8 group-hover:bg-primary group-hover:text-white transition-colors">
+    <div className="relative group flex flex-col items-center text-center">
+      <div className="w-16 h-16 rounded-2xl bg-primary/5 dark:bg-primary/10 shadow-md border border-primary/10 flex items-center justify-center text-primary font-semibold text-xl mb-8 group-hover:-translate-y-1 transition-all duration-300">
         {number}
       </div>
-      <h3 className="text-xl font-bold text-navy mb-4">{title}</h3>
-      <p className="text-text-muted leading-relaxed text-sm max-w-xs mx-auto">{description}</p>
+      <h3 className="text-xl font-medium tracking-tight mb-3">{title}</h3>
+      <p className="text-muted-foreground leading-relaxed text-base max-w-sm">{description}</p>
     </div>
   );
 }

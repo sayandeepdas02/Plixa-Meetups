@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from '../assets/logo.png';
 import authBg from '../assets/auth-bg.png';
+import { Button } from "@/components/ui/button";
 
 export default function Auth() {
   const [mode, setMode] = useState("signin"); // "signin" or "signup"
@@ -107,7 +108,7 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex font-sans">
       {/* Left Side - Form */}
-      <div className="w-full lg:w-2/5 flex items-center justify-center p-6 lg:p-12 bg-white">
+      <div className="w-full lg:w-2/5 flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
@@ -116,10 +117,10 @@ export default function Auth() {
           </Link>
 
           {/* Title */}
-          <h1 className="text-4xl font-bold text-navy mb-2">
+          <h1 className="text-4xl md:text-5xl tracking-tighter text-navy font-regular mb-2">
             {mode === "signup" ? "Sign up" : "Sign in"}
           </h1>
-          <p className="text-text-muted mb-8">
+          <p className="text-muted-foreground mb-8">
             {mode === "signup"
               ? "Sign up to enjoy the feature of Plixa"
               : "Please login to continue to your account."}
@@ -137,14 +138,14 @@ export default function Auth() {
             {/* Name Field (Sign Up Only) */}
             {mode === "signup" && (
               <div>
-                <label className="block text-sm text-text-muted mb-2">Your Name</label>
+                <label className="block text-sm text-muted-foreground mb-2">Your Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Jonas Khanwald"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
                 />
               </div>
             )}
@@ -152,33 +153,33 @@ export default function Auth() {
             {/* Date of Birth (Sign Up Only) */}
             {mode === "signup" && (
               <div>
-                <label className="block text-sm text-text-muted mb-2">Date of Birth</label>
+                <label className="block text-sm text-muted-foreground mb-2">Date of Birth</label>
                 <input
                   type="date"
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
                 />
               </div>
             )}
 
             {/* Email Field */}
             <div>
-              <label className="block text-sm text-text-muted mb-2">Email</label>
+              <label className="block text-sm text-muted-foreground mb-2">Email</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="jonas_kahnwald@gmail.com"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
               />
             </div>
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm text-text-muted mb-2">Password</label>
+              <label className="block text-sm text-muted-foreground mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -186,12 +187,12 @@ export default function Auth() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm pr-12"
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm pr-12"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-navy transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-navy transition-colors"
                 >
                   {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
                 </button>
@@ -215,13 +216,14 @@ export default function Auth() {
             )}
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-3.5 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              size="lg"
+              className="w-full text-base"
             >
               {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Sign in"}
-            </button>
+            </Button>
 
             {/* Divider */}
             <div className="relative my-6">
@@ -229,21 +231,23 @@ export default function Auth() {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-text-muted">or</span>
+                <span className="px-4 bg-background text-muted-foreground">or</span>
               </div>
             </div>
 
             {/* Google Sign In (UI Only) */}
-            <button
+            <Button
               type="button"
-              className="w-full py-3.5 px-4 rounded-xl border border-border bg-white hover:bg-bg-light transition-colors flex items-center justify-center gap-3 text-sm font-semibold text-text-main"
+              variant="outline"
+              size="lg"
+              className="w-full gap-3 text-base"
             >
               <IconGoogle className="w-5 h-5" />
               {mode === "signup" ? "Continue with Google" : "Sign in with Google"}
-            </button>
+            </Button>
 
             {/* Toggle Mode */}
-            <p className="text-center text-sm text-text-muted mt-6">
+            <p className="text-center text-sm text-muted-foreground mt-6">
               {mode === "signup" ? (
                 <>
                   Already have an account?{" "}
@@ -264,7 +268,7 @@ export default function Auth() {
 
           {/* Back to Home */}
           <div className="mt-8 pt-6 border-t border-border">
-            <Link to="/" className="text-sm font-semibold text-primary hover:text-primary-hover transition-colors flex items-center justify-center gap-1">
+            <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1">
               <IconArrowBack className="w-4 h-4" />
               Back to Home
             </Link>

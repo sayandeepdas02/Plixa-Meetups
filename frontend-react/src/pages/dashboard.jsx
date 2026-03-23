@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from '../assets/logo.png';
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "../components/theme-toggle";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -27,14 +29,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-light">
-      <nav className="h-16 border-b border-border bg-white flex items-center justify-between px-8 sticky top-0 z-50">
+    <div className="min-h-screen bg-background">
+      <nav className="h-16 border-b border-border bg-background flex items-center justify-between px-8 sticky top-0 z-50">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <img src={logo} alt="Logo" className="h-8 w-auto" />
-          <span className="font-bold text-navy">Plixa</span>
+          <span className="font-bold text-foreground">Plixa</span>
         </Link>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-text-muted hidden sm:block">Welcome, <span className="font-semibold text-navy">{user?.name || 'User'}</span></span>
+          <ThemeToggle />
+          <span className="text-sm text-muted-foreground hidden sm:block">Welcome, <span className="font-semibold text-foreground">{user?.name || 'User'}</span></span>
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
@@ -43,13 +46,13 @@ export default function Dashboard() {
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </button>
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-premium border border-border py-2">
-                <Link to="/settings" className="block px-4 py-2 text-sm text-text-main hover:bg-bg-light transition-colors">
+              <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-premium border border-border py-2">
+                <Link to="/settings" className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
                   Settings
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                 >
                   Logout
                 </button>
@@ -59,15 +62,17 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-8 py-12">
+      <div className="container mx-auto py-12 lg:py-20">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-extrabold text-navy tracking-tight">Your Boards</h1>
-            <p className="text-text-muted mt-2">Manage and collaborate on your real-time whiteboards.</p>
+            <h1 className="text-3xl md:text-5xl tracking-tighter text-foreground font-medium">Your Boards</h1>
+            <p className="text-muted-foreground mt-2">Manage and collaborate on your real-time whiteboards.</p>
           </div>
           <div className="flex gap-3">
-            <Link to="/board/global" className="btn-secondary py-2 px-5 text-sm">Open Global Board</Link>
-            <button onClick={() => document.getElementById('new-board-input').focus()} className="btn-primary py-2 px-5 text-sm">Create Board</button>
+            <Link to="/board/global">
+               <Button variant="outline">Open Global Board</Button>
+            </Link>
+            <Button onClick={() => document.getElementById('new-board-input').focus()}>Create Board</Button>
           </div>
         </header>
 
@@ -78,12 +83,12 @@ export default function Dashboard() {
             </div>
             <input
               id="new-board-input"
-              className="flex-1 bg-transparent border-0 outline-none text-bg-navy placeholder:text-text-muted text-lg font-medium"
+              className="flex-1 bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-lg font-medium"
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Give your new board a name..."
             />
-            <button className="btn-primary py-2 px-6">Create</button>
+            <Button size="lg">Create</Button>
           </form>
         </section>
 
@@ -99,22 +104,24 @@ export default function Dashboard() {
 
 function BoardCard({ board }) {
   return (
-    <div className="group glass-card overflow-hidden hover:border-primary/30 transition-all border-border shadow-soft hover:shadow-premium">
-      <div className="h-40 bg-white border-b border-border relative overflow-hidden flex items-center justify-center bg-[radial-gradient(#e2e8f0_1px,transparent_0)] bg-[size:16px_16px] opacity-80 group-hover:opacity-100 transition-opacity">
+    <div className="group glass-card overflow-hidden hover:border-primary/30 transition-all border-border shadow-soft hover:shadow-premium bg-card">
+      <div className="h-40 bg-muted/50 border-b border-border relative overflow-hidden flex items-center justify-center bg-[radial-gradient(var(--border)_1px,transparent_0)] bg-[size:16px_16px] opacity-80 group-hover:opacity-100 transition-opacity">
         {/* Abstract preview placeholder */}
         <div className="w-2/3 h-1/2 border-2 border-primary/10 rounded-lg rotate-3 group-hover:rotate-0 transition-transform"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent"></div>
       </div>
       <div className="p-5 flex flex-col gap-4">
         <div>
-          <h3 className="font-bold text-navy truncate group-hover:text-primary transition-colors">{board.name}</h3>
-          <p className="text-[10px] uppercase font-bold text-text-muted mt-1 tracking-wider">Last updated {board.updated}</p>
+          <h3 className="text-lg font-medium tracking-tight text-foreground truncate group-hover:text-primary transition-colors">{board.name}</h3>
+          <p className="text-[10px] uppercase font-bold text-muted-foreground mt-1 tracking-wider">Last updated {board.updated}</p>
         </div>
         <div className="flex gap-2">
-          <Link to={`/board/${board.id}`} className="btn-primary flex-1 py-1.5 text-xs">Open</Link>
-          <button className="btn-secondary py-1.5 px-3 text-xs" title="Share Board">
-            <IconShare className="w-3.5 h-3.5" />
-          </button>
+          <Link to={`/board/${board.id}`} className="flex-1">
+             <Button size="sm" className="w-full text-xs">Open</Button>
+          </Link>
+          <Button size="icon" variant="outline" title="Share Board">
+            <IconShare className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>

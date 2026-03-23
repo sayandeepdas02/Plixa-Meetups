@@ -1,31 +1,38 @@
 // frontend-react/src/pages/settings.jsx
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Settings() {
   const [name, setName] = useState("Guest");
   const [email, setEmail] = useState("");
-  const [dark, setDark] = useState(false);
 
   return (
-    <div className={`min-h-screen p-6 ${dark ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-900"}`}>
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Settings</h1>
+    <div className="min-h-screen bg-background text-foreground font-sans">
+      <div className="container mx-auto py-12 lg:py-20 max-w-3xl">
+        <div className="mb-8">
+          <Link to="/dashboard" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors inline-block mb-4">
+            &larr; Back to Dashboard
+          </Link>
+          <h1 className="text-3xl md:text-5xl tracking-tighter font-regular">Settings</h1>
+        </div>
 
-        <section className="bg-white dark:bg-slate-800 p-4 rounded shadow mb-4">
-          <h2 className="font-semibold mb-2">Profile</h2>
-          <div className="grid gap-3">
-            <input value={name} onChange={(e)=>setName(e.target.value)} className="border px-3 py-2 rounded" />
-            <input value={email} onChange={(e)=>setEmail(e.target.value)} className="border px-3 py-2 rounded" placeholder="email@example.com" />
-            <button className="w-max px-4 py-2 bg-indigo-600 text-white rounded">Save profile</button>
+        <section className="glass-card p-8 mb-8 border border-border">
+          <h2 className="text-xl tracking-tight mb-6">Profile</h2>
+          <div className="grid gap-4">
+            <input 
+              value={name} 
+              onChange={(e)=>setName(e.target.value)} 
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm" 
+            />
+            <input 
+              value={email} 
+              onChange={(e)=>setEmail(e.target.value)} 
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm" 
+              placeholder="email@example.com" 
+            />
+            <Button className="w-max mt-2">Save profile</Button>
           </div>
-        </section>
-
-        <section className="bg-white dark:bg-slate-800 p-4 rounded shadow">
-          <h2 className="font-semibold mb-2">Preferences</h2>
-          <label className="flex items-center gap-3">
-            <input type="checkbox" checked={dark} onChange={(e)=>setDark(e.target.checked)} />
-            <span>Enable dark mode (local only)</span>
-          </label>
         </section>
       </div>
     </div>
