@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-import heroImage from '../assets/hero-gantt-chart.png';
+import usecasesImage from '../assets/usecases.png';
 import { FeatureDemo } from '../components/feature-demo';
 import { HeroDemo } from '../components/hero-demo';
 import { Pricing as NewPricing } from '../components/ui/pricing-cards';
@@ -131,18 +131,9 @@ function UseCases() {
           </div>
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-400/20 rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative bg-card border border-border/60 rounded-[2rem] p-4 shadow-2xl overflow-hidden aspect-[4/3]">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-blue-50 dark:from-primary/5 dark:to-blue-950/30 flex items-center justify-center">
-                 <div className="w-3/4 h-3/4 rounded-xl border border-border bg-card shadow-sm flex flex-col overflow-hidden">
-                    <div className="h-8 border-b border-border/50 bg-muted/50 flex items-center px-3 gap-2">
-                       <div className="w-2.5 h-2.5 rounded-full bg-primary/30"></div><div className="w-2.5 h-2.5 rounded-full bg-border"></div>
-                    </div>
-                    <div className="flex-1 p-6 relative">
-                       <div className="w-32 h-20 bg-primary/5 rounded-lg absolute top-6 left-6 border border-primary/10"></div>
-                       <div className="w-24 h-24 bg-primary/5 rounded-full absolute top-12 right-12 border border-primary/10"></div>
-                       <svg className="absolute inset-0 w-full h-full text-primary/20 stroke-2" fill="none"><path d="M152 70 Q 200 70 240 100" stroke="currentColor"/></svg>
-                    </div>
-                 </div>
+            <div className="relative bg-card border border-border/60 rounded-[2rem] p-2 sm:p-4 shadow-2xl overflow-hidden aspect-[4/3]">
+              <div className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-muted/10 border border-border/30">
+                 <img src={usecasesImage} alt="Built for the future of work" className="w-full h-full object-cover object-center" />
               </div>
             </div>
           </div>
@@ -157,17 +148,18 @@ function BottomCTA() {
     <SectionWrapper variant="dark" className="bg-[#0b0f19] p-0 lg:p-0">
       <div className="py-20 lg:py-32">
         <Container>
-          <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/50 p-12 md:p-20 text-center shadow-2xl">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#3b82f620_0%,transparent_60%)]"></div>
+          <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-primary to-blue-700 p-12 md:p-20 text-center shadow-[0_0_50px_-12px_rgba(37,99,235,0.5)] border border-blue-400/20">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2)_0%,transparent_60%)]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2)_0%,transparent_60%)]"></div>
             <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-              <h2 className="text-4xl md:text-6xl tracking-tighter text-slate-50 font-medium mb-6">
+              <h2 className="text-4xl md:text-6xl tracking-tighter text-white font-medium mb-6">
                 Ready to start collaborating?
               </h2>
-              <p className="text-xl text-slate-400 leading-relaxed mb-10 balance-text">
+              <p className="text-xl text-blue-100/90 leading-relaxed mb-10 text-balance">
                 Join thousands of creators who bring their ideas to life with Plixa. No credit card required.
               </p>
               <Link to="/board">
-                 <Button size="lg" className="h-14 px-8 text-lg shadow-[0_4px_16px_rgba(37,99,235,0.4)]">
+                 <Button size="lg" className="h-14 px-10 text-lg bg-white text-primary hover:bg-slate-50 shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all border-none font-semibold">
                    Start Whiteboarding Free
                  </Button>
               </Link>

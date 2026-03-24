@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { SectionWrapper } from "../layout/SectionWrapper";
 import { Container } from "../layout/Container";
 import { Link } from "react-router-dom";
+import heroImage from "../../assets/hero-space.png";
 
 function Hero() {
   return (
@@ -51,16 +52,8 @@ function Hero() {
               <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
             </div>
             {/* Canvas mockup body */}
-            <div className="absolute top-10 inset-x-0 bottom-0 bg-[radial-gradient(#ffffff22_1px,transparent_0)] bg-[size:24px_24px] flex items-center justify-center">
-               <div className="text-slate-500 flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center backdrop-blur-md">
-                     <svg className="w-8 h-8 text-blue-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
-                  </div>
-                  <span className="text-sm font-medium tracking-widest uppercase opacity-50">Interactive Canvas</span>
-               </div>
-               {/* Decorative floating elements */}
-               <div className="absolute top-1/4 left-1/4 w-32 h-24 bg-blue-500/5 border border-blue-500/10 rounded-xl backdrop-blur-md shadow-2xl rotate-[-6deg]"></div>
-               <div className="absolute bottom-1/4 right-1/4 w-40 h-32 bg-blue-500/5 border border-blue-500/10 rounded-xl backdrop-blur-md shadow-2xl rotate-[12deg]"></div>
+            <div className="absolute top-10 inset-x-0 bottom-0 bg-black flex items-center justify-center overflow-hidden">
+               <img src={heroImage} alt="Plixa Canvas Interface" className="w-full h-full object-cover object-top opacity-90 hover:opacity-100 transition-opacity duration-500" />
             </div>
           </div>
         </div>
