@@ -13,7 +13,7 @@ export function Container({
   ...props 
 }: ContainerProps) {
   const widths = {
-    default: 'max-w-6xl',
+    default: 'max-w-5xl',
     narrow: 'max-w-4xl',
     wide: 'max-w-7xl',
     full: 'max-w-full'
@@ -22,7 +22,7 @@ export function Container({
   return (
     <div 
       className={cn(
-        'mx-auto px-6 md:px-8 w-full',
+        'mx-auto px-6 w-full',
         widths[width],
         className
       )}

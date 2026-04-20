@@ -51,14 +51,14 @@ const Pricing1 = () => {
   ];
 
   return (
-    <section id="pricing" className="flex flex-col items-center justify-center gap-20  w-[95%] mx-auto py-20 bg-background text-foreground">
+    <section id="pricing" className="flex flex-col items-center justify-center gap-20 w-full max-w-5xl px-6 mx-auto py-20 bg-background text-foreground">
       <div className="flex flex-col items-center gap-7 w-full">
         <h2 className="font-medium text-2xl leading-6 text-center">
           Simple and transparent pricing
         </h2>
       </div>
 
-      <div className="flex justify-between flex-wrap max-w-4xl">
+      <div className="flex justify-between flex-wrap w-full">
         {pricingPlans.map((plan, index) => (
           <div
             key={index}

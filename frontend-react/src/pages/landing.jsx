@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import usecasesImage from '../assets/usecases.png';
 import { Features } from '../components/ui/features-4';
-import { HeroDemo } from '../components/hero-demo';
+import { HeroSection } from '../components/ui/hero-section-2';
 import { Pricing1 } from '../components/ui/pricing-1';
 import { TestimonialDemo } from '../components/testimonial-demo';
 import { Button } from '@/components/ui/button';
@@ -16,9 +16,8 @@ import { CinematicFooter } from '../components/ui/motion-footer';
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/10 selection:text-primary">
-      <Navbar />
       <main>
-        <HeroDemo />
+        <HeroSection />
         <Features />
         <HowItWorks />
         <UseCases />
@@ -27,39 +26,6 @@ export default function Landing() {
       </main>
       <CinematicFooter />
     </div>
-  );
-}
-
-
-function Navbar() {
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <img src={logo} alt="Plixa Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold tracking-tight text-foreground">Plixa</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-            <a href="#use-cases" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Use Cases</a>
-          </nav>
-        </div>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <Link to="/auth" className="hidden sm:block text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
-            Sign In
-          </Link>
-          <Link to="/board">
-            <Button>
-              Start Whiteboarding
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </header>
   );
 }
 
