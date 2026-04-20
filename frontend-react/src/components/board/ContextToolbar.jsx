@@ -42,19 +42,19 @@ export default function ContextToolbar({
 
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
-      <div className="glass-card px-5 py-2.5 flex items-center gap-6 shadow-premium border-border/60 bg-white/90 backdrop-blur-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="glass-card px-5 py-2.5 flex items-center gap-6 shadow-premium border-border/60 backdrop-blur-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
         
         {/* Color Palette */}
         {tool !== TOOLS.ERASER && (
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Color</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Color</span>
             <div className="flex items-center gap-1.5">
               {presetColors.map((c) => (
                 <button
                   key={c}
                   onClick={() => setColor(c)}
                   className={`w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
-                    color === c ? "border-navy ring-1 ring-offset-1 ring-navy scale-110 shadow-sm" : "border-transparent"
+                    color === c ? "border-foreground ring-1 ring-offset-1 ring-foreground scale-110 shadow-sm" : "border-transparent"
                   }`}
                   style={{ backgroundColor: c }}
                   title={c}
@@ -86,10 +86,10 @@ export default function ContextToolbar({
         {/* Thickness / Width */}
         {tool !== TOOLS.TEXT && tool !== TOOLS.STICKY && (
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
               {tool === TOOLS.ERASER ? "Size" : "Width"}
             </span>
-            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg">
+            <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-lg">
               {tool === TOOLS.ERASER ? (
                 <>
                   <WidthBtn size={16} current={eraserSize} onClick={() => setEraserSize(16)} />
@@ -123,12 +123,12 @@ function WidthBtn({ size, current, onClick }) {
     <button
       onClick={onClick}
       className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
-        isActive ? "bg-white shadow-sm" : "hover:bg-slate-200"
+        isActive ? "bg-background shadow-sm" : "hover:bg-muted"
       }`}
       title={`${size}px`}
     >
       <div 
-        className={`rounded-full ${isActive ? "bg-navy" : "bg-text-muted"}`} 
+        className={`rounded-full ${isActive ? "bg-foreground" : "bg-muted-foreground"}`} 
         style={{ width: clampedSize, height: clampedSize }} 
       />
     </button>

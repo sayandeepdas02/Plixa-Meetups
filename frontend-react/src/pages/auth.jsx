@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import logo from '../assets/logo.png';
 import authBg from '../assets/auth-bg.png';
 import { Button } from "@/components/ui/button";
+import { useGoogleLogin } from '@react-oauth/google';
 
 export default function Auth() {
   const [mode, setMode] = useState("signin"); // "signin" or "signup"
@@ -20,7 +21,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { signup, signin } = useAuth();
+  const { signup, signin, googleSignin } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -105,6 +106,28 @@ export default function Auth() {
     setFormData({ name: "", email: "", password: "", dateOfBirth: "" });
   };
 
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await googleSignin(tokenResponse.access_token);
+        if (result.success) {
+          navigate("/dashboard");
+        } else {
+          setError(result.error || "Google authentication failed");
+        }
+      } catch (err) {
+        setError("Something went wrong with Google sign-in.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      setError("Google authentication was canceled or failed.");
+    }
+  });
+
   return (
     <div className="min-h-screen flex font-sans">
       {/* Left Side - Form */}
@@ -113,11 +136,11 @@ export default function Auth() {
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
             <img src={logo} alt="Plixa Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold text-navy">Plixa</span>
+            <span className="text-xl font-bold text-foreground">Plixa</span>
           </Link>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl tracking-tighter text-navy font-regular mb-2">
+          <h1 className="text-4xl md:text-5xl tracking-tighter text-foreground font-regular mb-2">
             {mode === "signup" ? "Sign up" : "Sign in"}
           </h1>
           <p className="text-muted-foreground mb-8">
@@ -192,7 +215,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-navy transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
                 </button>
@@ -209,7 +232,7 @@ export default function Auth() {
                   onChange={(e) => setKeepLoggedIn(e.target.checked)}
                   className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
                 />
-                <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-text-main">
+                <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-foreground">
                   Keep me logged in
                 </label>
               </div>
@@ -235,12 +258,14 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Google Sign In (UI Only) */}
+            {/* Google Sign In */}
             <Button
               type="button"
               variant="outline"
               size="lg"
               className="w-full gap-3 text-base"
+              onClick={() => handleGoogleLogin()}
+              disabled={loading}
             >
               <IconGoogle className="w-5 h-5" />
               {mode === "signup" ? "Continue with Google" : "Sign in with Google"}

@@ -108,6 +108,50 @@ app.post('/api/auth/signin', async (req, res) => {
   }
 });
 
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: 'Token is required' });
+
+    // Validate access token with Google
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    if (!response.ok) {
+        return res.status(401).json({ error: 'Invalid Google token' });
+    }
+    
+    const googleUser = await response.json();
+    const { email, name, sub: googleId, picture } = googleUser;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Google account has no email' });
+    }
+
+    let user = UserModel.findByEmail(email);
+    if (!user) {
+        user = UserModel.create({
+            name: name || email.split('@')[0],
+            email,
+            password: '', // Handled by Google
+            googleId,
+            picture
+        });
+    } else if (!user.googleId) {
+        user.googleId = googleId;
+        user.picture = user.picture || picture;
+    }
+
+    const jwtToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token: jwtToken, user: UserModel.sanitize(user) });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 app.get('/api/auth/me', authenticateToken, (req, res) => {
   const user = UserModel.findById(req.user.id);
   if (!user) {

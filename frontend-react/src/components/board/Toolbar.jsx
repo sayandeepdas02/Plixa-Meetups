@@ -7,7 +7,7 @@ export function ToolBtn({ active, onClick, icon, title, isColor }) {
       className={`relative group p-2.5 rounded-xl transition-all duration-200 transform outline-none focus:ring-2 focus:ring-primary/30 ${
         active 
           ? "bg-primary/10 text-primary shadow-[inset_0_1px_3px_rgba(37,99,235,0.1)]" 
-          : "text-text-muted hover:bg-slate-100 hover:text-navy hover:shadow-sm"
+          : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground hover:shadow-sm"
       }`}
       aria-label={title}
     >
@@ -18,10 +18,10 @@ export function ToolBtn({ active, onClick, icon, title, isColor }) {
       )}
       
       {/* Tooltip */}
-      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-slate-800 text-white text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
+      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-foreground text-background text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
         {title}
         {/* Tooltip Arrow */}
-        <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800"></span>
+        <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground"></span>
       </span>
     </button>
   );
@@ -43,7 +43,7 @@ export default function Toolbar({ tool, setTool, onClear, fileInputRef, onUpload
 
   return (
     <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40 select-none">
-      <div className="glass-card p-2 flex flex-col gap-1 shadow-premium border-border/60 bg-white/80 backdrop-blur-2xl rounded-2xl">
+      <div className="glass-card p-2 flex flex-col gap-1 shadow-premium border-border/60 backdrop-blur-2xl rounded-2xl">
         <ToolBtn active={tool === TOOLS.CURSOR} onClick={() => setTool(TOOLS.CURSOR)} icon={<IconCursor />} title="Select (V)" />
         <ToolBtn active={tool === TOOLS.HAND} onClick={() => setTool(TOOLS.HAND)} icon={<IconHand />} title="Pan (H)" />
         
@@ -63,19 +63,19 @@ export default function Toolbar({ tool, setTool, onClear, fileInputRef, onUpload
         
         <div className="h-px bg-border/50 my-1 mx-2"></div>
         
-        <label className="relative group p-2.5 rounded-xl cursor-pointer hover:bg-slate-100 transition-all text-text-muted hover:text-navy hover:shadow-sm">
+        <label className="relative group p-2.5 rounded-xl cursor-pointer hover:bg-secondary/80 transition-all text-muted-foreground hover:text-foreground hover:shadow-sm">
           <IconImage className="w-5 h-5" />
           <input ref={fileInputRef} type="file" accept="image/*" onChange={onUploadChange} className="hidden" />
-          <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-slate-800 text-white text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+          <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-foreground text-background text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
             Image Upload
-            <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800"></span>
+            <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground"></span>
           </span>
         </label>
       </div>
 
       <button
         onClick={onClear}
-        className="glass-card p-3 hover:bg-red-50 text-text-muted hover:text-red-500 border-border/60 hover:border-red-100 transition-all shadow-md rounded-2xl outline-none focus:ring-2 focus:ring-red-200 group"
+        className="glass-card p-3 hover:bg-destructive/10 text-muted-foreground hover:text-destructive border-border/60 hover:border-destructive/20 transition-all shadow-md rounded-2xl outline-none focus:ring-2 focus:ring-destructive/30 group"
         title="Clear Canvas"
       >
         <IconTrash className="w-5 h-5 mx-auto group-hover:scale-110 transition-transform duration-200" />

@@ -53,11 +53,11 @@ export default function Navbar({
   const extraParticipantsCount = Math.max(0, participants.length - 5);
 
   return (
-    <header className="h-14 border-b border-border bg-white flex items-center justify-between px-4 z-40 shadow-sm flex-none w-full">
+    <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4 z-40 shadow-sm flex-none w-full">
       <div className="flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <img src={logo} alt="Logo" className="h-7 w-auto" />
-          <span className="font-bold text-navy hidden sm:block">Plixa</span>
+          <span className="font-bold text-foreground hidden sm:block">Plixa</span>
         </Link>
 
         <div className="h-4 w-px bg-border mx-2 hidden md:block"></div>
@@ -71,12 +71,12 @@ export default function Navbar({
               onChange={(e) => setLocalName(e.target.value)}
               onBlur={handleNameSave}
               onKeyDown={handleKeyDown}
-              className="text-sm font-semibold text-navy bg-primary/5 border border-primary/20 rounded px-2 py-1 outline-none ring-2 ring-primary/20 transition-all w-[150px]"
+              className="text-sm font-semibold text-foreground bg-secondary border border-primary/20 rounded px-2 py-1 outline-none ring-2 ring-primary/20 transition-all w-[150px]"
             />
           ) : (
             <span
               onClick={() => setIsEditingName(true)}
-              className="text-sm font-semibold text-navy truncate max-w-[150px] cursor-text hover:bg-bg-light px-2 py-1 rounded transition-colors -ml-2"
+              className="text-sm font-semibold text-foreground truncate max-w-[150px] cursor-text hover:bg-secondary px-2 py-1 rounded transition-colors -ml-2"
               title="Click to rename"
             >
               {localName}
@@ -85,13 +85,13 @@ export default function Navbar({
 
           <div className="flex items-center gap-1.5 opacity-80">
             {saveStatus === "Saving..." ? (
-              <div className="w-3 h-3 border-2 border-text-muted border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-3 h-3 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-500">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             )}
-            <span className="text-[10px] font-medium text-text-muted hidden sm:block">{saveStatus}</span>
+            <span className="text-[10px] font-medium text-muted-foreground hidden sm:block">{saveStatus}</span>
           </div>
         </div>
       </div>
@@ -102,19 +102,19 @@ export default function Navbar({
           {displayParticipants.map((pid, i) => (
             <div
               key={pid}
-              className="w-8 h-8 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border shadow-sm transform hover:-translate-y-1 hover:z-10 transition-all cursor-default"
+              className="w-8 h-8 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border shadow-sm transform hover:-translate-y-1 hover:z-10 transition-all cursor-default"
               title={pid === socketId ? "You" : `User ${pid.slice(0, 4)}`}
             >
               {pid === socketId ? "You" : pid.slice(0, 2).toUpperCase()}
             </div>
           ))}
           {extraParticipantsCount > 0 && (
-            <div className="w-8 h-8 rounded-full border-2 border-white bg-bg-light flex items-center justify-center text-[10px] font-bold text-text-muted ring-1 ring-border shadow-sm">
+            <div className="w-8 h-8 rounded-full border-2 border-background bg-secondary flex items-center justify-center text-[10px] font-bold text-muted-foreground ring-1 ring-border shadow-sm">
               +{extraParticipantsCount}
             </div>
           )}
           {participants.length === 0 && (
-            <div className="w-8 h-8 rounded-full border-2 border-white bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border shadow-sm">
+            <div className="w-8 h-8 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-border shadow-sm">
               You
             </div>
           )}
@@ -151,7 +151,7 @@ export default function Navbar({
             className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                 chatOpen
                 ? "bg-primary/10 text-primary"
-                : "hover:bg-bg-light text-text-muted hover:text-navy"
+                : "hover:bg-secondary text-muted-foreground hover:text-foreground"
             }`}
             title={chatOpen ? "Close panel" : "Open collaboration panel"}
             >

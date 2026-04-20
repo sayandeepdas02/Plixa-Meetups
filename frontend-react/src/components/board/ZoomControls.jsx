@@ -11,10 +11,10 @@ export default function ZoomControls({
   return (
     <div className="absolute bottom-6 right-6 z-40 flex flex-col gap-2 items-end">
       {/* Optional: Navigation map dot or fit controls */}
-      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft bg-white/80 backdrop-blur-xl rounded-xl">
+      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft backdrop-blur-xl rounded-xl">
         <button 
           onClick={onFit}
-          className="px-2.5 py-1 text-[10px] font-bold text-text-muted hover:text-navy hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
+          className="px-2.5 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary rounded transition-colors uppercase tracking-wider"
           title="Fit to screen (Shift+1)"
         >
           Fit
@@ -22,7 +22,7 @@ export default function ZoomControls({
         <div className="w-px h-3 bg-border/60 mx-1"></div>
         <button 
           onClick={onCenter}
-          className="px-2.5 py-1 text-[10px] font-bold text-text-muted hover:text-navy hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
+          className="px-2.5 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary rounded transition-colors uppercase tracking-wider"
           title="Zoom to 100% (Shift+0)"
         >
           100%
@@ -30,10 +30,10 @@ export default function ZoomControls({
       </div>
 
       {/* Main zoom controls */}
-      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft bg-white/80 backdrop-blur-xl rounded-xl">
+      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft backdrop-blur-xl rounded-xl">
         <button 
           onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
-          className="p-1.5 hover:bg-slate-100 text-text-muted hover:text-navy rounded transition-colors"
+          className="p-1.5 hover:bg-secondary text-muted-foreground hover:text-foreground rounded transition-colors"
           title="Zoom Out (-)"
         >
           <IconMinus className="w-4 h-4" />
@@ -41,7 +41,7 @@ export default function ZoomControls({
         
         <button 
           onClick={onCenter}
-          className="px-3 text-[11px] font-mono font-semibold text-navy w-14 text-center hover:bg-slate-100 py-1 rounded transition-colors"
+          className="px-3 text-[11px] font-mono font-semibold text-foreground w-14 text-center hover:bg-secondary py-1 rounded transition-colors"
           title="Reset Zoom"
         >
           {percentage}%
@@ -49,7 +49,7 @@ export default function ZoomControls({
         
         <button 
           onClick={() => setZoom(Math.min(5, zoom + 0.1))}
-          className="p-1.5 hover:bg-slate-100 text-text-muted hover:text-navy rounded transition-colors"
+          className="p-1.5 hover:bg-secondary text-muted-foreground hover:text-foreground rounded transition-colors"
           title="Zoom In (+)"
         >
           <IconPlus className="w-4 h-4" />

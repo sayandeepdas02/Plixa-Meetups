@@ -2,15 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import usecasesImage from '../assets/usecases.png';
-import { FeatureDemo } from '../components/feature-demo';
+import { Features } from '../components/ui/features-4';
 import { HeroDemo } from '../components/hero-demo';
-import { Pricing as NewPricing } from '../components/ui/pricing-cards';
+import { Pricing1 } from '../components/ui/pricing-1';
 import { TestimonialDemo } from '../components/testimonial-demo';
 import { Button } from '@/components/ui/button';
 import { SectionWrapper } from '../components/layout/SectionWrapper';
 import { Container } from '../components/layout/Container';
 import { HeadingBlock } from '../components/layout/HeadingBlock';
 import { ThemeToggle } from '../components/theme-toggle';
+import { CinematicFooter } from '../components/ui/motion-footer';
 
 export default function Landing() {
   return (
@@ -18,14 +19,13 @@ export default function Landing() {
       <Navbar />
       <main>
         <HeroDemo />
-        <FeatureDemo />
+        <Features />
         <HowItWorks />
         <UseCases />
         <TestimonialDemo />
-        <NewPricing />
-        <BottomCTA />
+        <Pricing1 />
       </main>
-      <Footer />
+      <CinematicFooter />
     </div>
   );
 }
@@ -143,83 +143,9 @@ function UseCases() {
   );
 }
 
-function BottomCTA() {
-  return (
-    <SectionWrapper variant="dark" className="bg-[#0b0f19] p-0 lg:p-0">
-      <div className="py-20 lg:py-32">
-        <Container>
-          <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-primary to-blue-700 p-12 md:p-20 text-center shadow-[0_0_50px_-12px_rgba(37,99,235,0.5)] border border-blue-400/20">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2)_0%,transparent_60%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2)_0%,transparent_60%)]"></div>
-            <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-              <h2 className="text-4xl md:text-6xl tracking-tighter text-white font-medium mb-6">
-                Ready to start collaborating?
-              </h2>
-              <p className="text-xl text-blue-100/90 leading-relaxed mb-10 text-balance">
-                Join thousands of creators who bring their ideas to life with Plixa. No credit card required.
-              </p>
-              <Link to="/board">
-                 <Button size="lg" className="h-14 px-10 text-lg bg-white text-primary hover:bg-slate-50 shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all border-none font-semibold">
-                   Start Whiteboarding Free
-                 </Button>
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </div>
-    </SectionWrapper>
-  );
-}
 
-function Footer() {
-  return (
-    <footer className="bg-background border-t border-border py-16">
-      <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 lg:gap-24 mb-16">
-          <div className="col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-6 transition-opacity hover:opacity-80">
-              <img src={logo} alt="Plixa Logo" className="h-8 w-auto" />
-              <span className="text-xl font-medium tracking-tight text-foreground">Plixa</span>
-            </Link>
-            <p className="text-muted-foreground text-sm max-w-xs leading-relaxed">
-              Professional real-time collaboration for the modern web. Built for speed, performance, and ultimate security.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium text-foreground mb-4">Product</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
-              <li><a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a></li>
-              <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-medium text-foreground mb-4">Company</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Plixa Inc. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <a href="/board/global" target="_blank" rel="noopener noreferrer" aria-label="Twitter Profile">
-              <IconTwitter className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
-            </a>
-            <a href="https://github.com/sayandeepdas02/Plixa-Meetups" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
-              <IconGithub className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
-            </a>
-          </div>
-        </div>
-      </Container>
-    </footer>
-  );
-}
+
+
 
 function FeatureCard({ title, description, icon }) {
   return (

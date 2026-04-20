@@ -104,6 +104,34 @@ export function AuthProvider({ children }) {
         }
     };
 
+    const googleSignin = async (accessToken) => {
+        try {
+            const response = await fetch(`${BACKEND}/api/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: accessToken })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Google Signin failed');
+            }
+
+            // Store token and user
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('auth_user', JSON.stringify(data.user));
+            setToken(data.token);
+            setUser(data.user);
+
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_user');
@@ -118,6 +146,7 @@ export function AuthProvider({ children }) {
         isAuthenticated: !!token && !!user,
         signup,
         signin,
+        googleSignin,
         logout
     };
 

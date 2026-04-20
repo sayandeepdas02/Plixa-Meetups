@@ -11,8 +11,10 @@ const UserModel = {
             id: userIdCounter++,
             name: userData.name,
             email: userData.email.toLowerCase(),
-            password: userData.password, // Should be hashed before calling this
-            dateOfBirth: userData.dateOfBirth,
+            password: userData.password || null, // Optional for Google OAuth users
+            googleId: userData.googleId || null,
+            picture: userData.picture || null,
+            dateOfBirth: userData.dateOfBirth || null,
             createdAt: new Date().toISOString(),
         };
         users.push(user);
