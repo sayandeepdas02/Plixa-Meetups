@@ -17,7 +17,7 @@ const RightPanel = memo(function RightPanel({
     <>
       {/* Desktop sidebar */}
       <div
-        className={`hidden md:flex flex-col border-l border-border bg-white shadow-[-4px_0_24px_-4px_rgba(0,0,0,0.02)] transition-all duration-300 ease-in-out overflow-hidden flex-none z-30 ${
+        className={`hidden md:flex flex-col border-l border-border/60 bg-background shadow-soft transition-all duration-300 ease-in-out overflow-hidden flex-none z-30 ${
           open ? "w-80" : "w-0"
         }`}
         style={{ willChange: "width" }}
@@ -38,7 +38,7 @@ const RightPanel = memo(function RightPanel({
 
       {/* Mobile overlay */}
       {open && (
-        <div className="md:hidden absolute inset-0 z-50 flex flex-col bg-white animate-in slide-in-from-right-full duration-300">
+        <div className="md:hidden absolute inset-0 z-50 flex flex-col bg-background animate-in slide-in-from-right-full duration-300">
           <PanelContent
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -68,11 +68,11 @@ function PanelContent({
   return (
     <div className="flex flex-col h-full w-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14 border-b border-border bg-white flex-none w-full">
-        <span className="font-bold text-navy text-sm">Collaboration Hub</span>
+      <div className="flex items-center justify-between px-4 h-14 border-b border-border/60 bg-background flex-none w-full">
+        <span className="font-semibold tracking-tight text-foreground text-sm">Collaboration Hub</span>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-text-muted hover:bg-slate-100 hover:text-navy transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="p-1.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
           title="Close panel"
         >
           <IconX className="w-4 h-4" />
@@ -80,14 +80,14 @@ function PanelContent({
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center px-4 border-b border-border bg-slate-50">
+      <div className="flex items-center px-4 border-b border-border/60 bg-secondary/30">
         <TabBtn label="Chat" active={activeTab === "chat"} onClick={() => setActiveTab("chat")} />
         <TabBtn label="Active" badge={participants.length} active={activeTab === "participants"} onClick={() => setActiveTab("participants")} />
         {/* <TabBtn label="Activity" active={activeTab === "activity"} onClick={() => setActiveTab("activity")} /> */}
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden relative w-full bg-white">
+      <div className="flex-1 overflow-hidden relative w-full bg-background">
         {activeTab === "chat" && (
           <div className="absolute inset-0 flex flex-col w-full h-full">
             <ChatMessageList messages={messages} socketId={socketId} />
@@ -97,7 +97,7 @@ function PanelContent({
 
         {activeTab === "participants" && (
           <div className="absolute inset-0 overflow-y-auto p-4 flex flex-col gap-2">
-            <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">In this board ({participants.length})</h4>
+            <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">In this board ({participants.length})</h4>
             {participants.map((pid, i) => {
               const isMe = pid === socketId;
               const name = isMe ? "You" : `User ${pid.slice(0, 4)}`;
@@ -111,10 +111,10 @@ function PanelContent({
                     {name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-navy flex items-center gap-2">
-                      {name} {isMe && <span className="text-[10px] bg-slate-100 text-text-muted px-1.5 py-0.5 rounded font-medium">Me</span>}
+                    <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      {name} {isMe && <span className="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded font-medium">Me</span>}
                     </span>
-                    <span className="text-[11px] text-green-500 flex items-center gap-1">
+                    <span className="text-[11px] text-green-500/80 flex items-center gap-1 font-medium">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
                     </span>
                   </div>
@@ -123,8 +123,8 @@ function PanelContent({
             })}
             
             {participants.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-40 text-text-muted text-sm text-center">
-                <IconUsers className="w-8 h-8 text-slate-300 mb-2" />
+              <div className="flex flex-col items-center justify-center h-40 text-muted-foreground text-sm text-center">
+                <IconUsers className="w-8 h-8 text-muted-foreground/30 mb-2" />
                 No other participants here yet.<br/>Share the board link!
               </div>
             )}
@@ -139,8 +139,8 @@ function TabBtn({ label, badge, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`relative py-3 px-3 text-sm font-semibold transition-colors focus:outline-none flex items-center gap-2 ${
-        active ? "text-primary" : "text-text-muted hover:text-navy"
+      className={`relative py-3 px-3 text-xs font-semibold transition-colors focus:outline-none flex items-center gap-2 ${
+        active ? "text-primary" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {label}

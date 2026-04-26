@@ -53,7 +53,7 @@ export default function Navbar({
   const extraParticipantsCount = Math.max(0, participants.length - 5);
 
   return (
-    <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4 z-40 shadow-sm flex-none w-full">
+    <header className="h-14 border-b border-border/60 bg-background flex items-center justify-between px-5 z-40 flex-none w-full">
       <div className="flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <img src={logo} alt="Logo" className="h-7 w-auto" />
@@ -71,12 +71,12 @@ export default function Navbar({
               onChange={(e) => setLocalName(e.target.value)}
               onBlur={handleNameSave}
               onKeyDown={handleKeyDown}
-              className="text-sm font-semibold text-foreground bg-secondary border border-primary/20 rounded px-2 py-1 outline-none ring-2 ring-primary/20 transition-all w-[150px]"
+              className="text-sm font-semibold text-foreground bg-background border border-border/60 rounded-lg px-2.5 py-1 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all w-[180px]"
             />
           ) : (
             <span
               onClick={() => setIsEditingName(true)}
-              className="text-sm font-semibold text-foreground truncate max-w-[150px] cursor-text hover:bg-secondary px-2 py-1 rounded transition-colors -ml-2"
+              className="text-sm font-semibold text-foreground truncate max-w-[180px] cursor-text hover:bg-muted px-2.5 py-1.5 rounded-lg transition-colors -ml-2.5"
               title="Click to rename"
             >
               {localName}
@@ -126,17 +126,17 @@ export default function Navbar({
         <div className="flex flex-row items-center gap-1.5 sm:gap-2">
             <button
             onClick={onShare}
-            className="hidden sm:flex btn-secondary py-1.5 px-3 sm:px-4 text-[11px] sm:text-xs font-semibold h-8"
+            className="hidden sm:flex btn-outline py-1.5 px-3 sm:px-4 text-[11px] sm:text-xs font-semibold h-8"
             >
             Share
             </button>
 
             <button
             onClick={webrtc.isInCall ? webrtc.leaveCall : webrtc.joinCall}
-            className={`flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95 ${
+            className={`flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold transition-all shadow-sm active:-translate-y-px ${
                 webrtc.isInCall
-                ? "bg-red-500 hover:bg-red-600 text-white border border-red-600"
-                : "bg-primary hover:bg-primary-hover text-white border border-primary"
+                ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground border border-transparent"
+                : "btn-primary"
             }`}
             title={webrtc.isInCall ? "Leave call" : "Join voice & video call"}
             >
@@ -151,7 +151,7 @@ export default function Navbar({
             className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                 chatOpen
                 ? "bg-primary/10 text-primary"
-                : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                : "hover:bg-muted text-muted-foreground hover:text-foreground"
             }`}
             title={chatOpen ? "Close panel" : "Open collaboration panel"}
             >

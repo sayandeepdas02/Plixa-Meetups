@@ -11,7 +11,7 @@ export default function ZoomControls({
   return (
     <div className="absolute bottom-6 right-6 z-40 flex flex-col gap-2 items-end">
       {/* Optional: Navigation map dot or fit controls */}
-      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft backdrop-blur-xl rounded-xl">
+      <div className="rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-sm flex items-center p-1">
         <button 
           onClick={onFit}
           className="px-2.5 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary rounded transition-colors uppercase tracking-wider"
@@ -30,7 +30,7 @@ export default function ZoomControls({
       </div>
 
       {/* Main zoom controls */}
-      <div className="glass-card flex items-center p-1 border-border/60 shadow-soft backdrop-blur-xl rounded-xl">
+      <div className="rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-premium flex items-center p-1.5">
         <button 
           onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
           className="p-1.5 hover:bg-secondary text-muted-foreground hover:text-foreground rounded transition-colors"

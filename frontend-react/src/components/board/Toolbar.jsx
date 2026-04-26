@@ -4,10 +4,10 @@ export function ToolBtn({ active, onClick, icon, title, isColor }) {
   return (
     <button
       onClick={onClick}
-      className={`relative group p-2.5 rounded-xl transition-all duration-200 transform outline-none focus:ring-2 focus:ring-primary/30 ${
+      className={`relative group p-2 rounded-xl transition-all duration-200 outline-none focus:ring-2 focus:ring-primary/30 ${
         active 
-          ? "bg-primary/10 text-primary shadow-[inset_0_1px_3px_rgba(37,99,235,0.1)]" 
-          : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground hover:shadow-sm"
+          ? "bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20" 
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
       aria-label={title}
     >
@@ -18,7 +18,7 @@ export function ToolBtn({ active, onClick, icon, title, isColor }) {
       )}
       
       {/* Tooltip */}
-      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-foreground text-background text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg">
+      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2.5 py-1.5 bg-foreground text-background text-[11px] font-semibold tracking-wide rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 shadow-lg scale-95 group-hover:scale-100 origin-left">
         {title}
         {/* Tooltip Arrow */}
         <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground"></span>
@@ -42,31 +42,31 @@ export default function Toolbar({ tool, setTool, onClear, fileInputRef, onUpload
   };
 
   return (
-    <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40 select-none">
-      <div className="glass-card p-2 flex flex-col gap-1 shadow-premium border-border/60 backdrop-blur-2xl rounded-2xl">
+    <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40 select-none">
+      <div className="rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-premium p-1.5 flex flex-col gap-0.5">
         <ToolBtn active={tool === TOOLS.CURSOR} onClick={() => setTool(TOOLS.CURSOR)} icon={<IconCursor />} title="Select (V)" />
         <ToolBtn active={tool === TOOLS.HAND} onClick={() => setTool(TOOLS.HAND)} icon={<IconHand />} title="Pan (H)" />
         
-        <div className="h-px bg-border/50 my-1 mx-2"></div>
+        <div className="h-px bg-border/40 my-1 mx-1.5"></div>
         
         <ToolBtn active={tool === TOOLS.PENCIL} onClick={() => setTool(TOOLS.PENCIL)} icon={<IconPencil />} title="Pencil (P)" />
         <ToolBtn active={tool === TOOLS.ERASER} onClick={() => setTool(TOOLS.ERASER)} icon={<IconEraser />} title="Eraser (E)" />
         <ToolBtn active={tool === TOOLS.TEXT} onClick={() => setTool(TOOLS.TEXT)} icon={<IconText />} title="Text (T)" />
         <ToolBtn active={tool === TOOLS.STICKY} onClick={() => setTool(TOOLS.STICKY)} icon={<IconSticky />} title="Sticky Note (S)" />
         
-        <div className="h-px bg-border/50 my-1 mx-2"></div>
+        <div className="h-px bg-border/40 my-1 mx-1.5"></div>
         
         <ToolBtn active={tool === TOOLS.RECT} onClick={() => setTool(TOOLS.RECT)} icon={<IconSquare />} title="Rectangle (R)" />
         <ToolBtn active={tool === TOOLS.CIRCLE} onClick={() => setTool(TOOLS.CIRCLE)} icon={<IconCircle />} title="Circle (O)" />
         <ToolBtn active={tool === TOOLS.ARROW} onClick={() => setTool(TOOLS.ARROW)} icon={<IconArrow />} title="Arrow (A)" />
         <ToolBtn active={tool === TOOLS.LINE} onClick={() => setTool(TOOLS.LINE)} icon={<IconLine />} title="Line (L)" />
         
-        <div className="h-px bg-border/50 my-1 mx-2"></div>
+        <div className="h-px bg-border/40 my-1 mx-1.5"></div>
         
-        <label className="relative group p-2.5 rounded-xl cursor-pointer hover:bg-secondary/80 transition-all text-muted-foreground hover:text-foreground hover:shadow-sm">
+        <label className="relative group p-2 rounded-xl cursor-pointer hover:bg-muted transition-all text-muted-foreground hover:text-foreground">
           <IconImage className="w-5 h-5" />
           <input ref={fileInputRef} type="file" accept="image/*" onChange={onUploadChange} className="hidden" />
-          <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-foreground text-background text-[10px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+          <span className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2.5 py-1.5 bg-foreground text-background text-[11px] font-semibold tracking-wide rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 shadow-lg scale-95 group-hover:scale-100 origin-left">
             Image Upload
             <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground"></span>
           </span>
@@ -75,7 +75,7 @@ export default function Toolbar({ tool, setTool, onClear, fileInputRef, onUpload
 
       <button
         onClick={onClear}
-        className="glass-card p-3 hover:bg-destructive/10 text-muted-foreground hover:text-destructive border-border/60 hover:border-destructive/20 transition-all shadow-md rounded-2xl outline-none focus:ring-2 focus:ring-destructive/30 group"
+        className="p-2.5 bg-card/95 backdrop-blur-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive border border-border/60 transition-all shadow-md rounded-2xl outline-none focus:ring-2 focus:ring-destructive/30 group"
         title="Clear Canvas"
       >
         <IconTrash className="w-5 h-5 mx-auto group-hover:scale-110 transition-transform duration-200" />

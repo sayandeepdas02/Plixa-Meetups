@@ -42,7 +42,7 @@ export default function ContextToolbar({
 
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
-      <div className="glass-card px-5 py-2.5 flex items-center gap-6 shadow-premium border-border/60 backdrop-blur-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="rounded-full border border-border/60 bg-card/95 backdrop-blur-xl shadow-premium px-6 py-2.5 flex items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
         
         {/* Color Palette */}
         {tool !== TOOLS.ERASER && (
@@ -89,7 +89,7 @@ export default function ContextToolbar({
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
               {tool === TOOLS.ERASER ? "Size" : "Width"}
             </span>
-            <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-lg">
+            <div className="flex items-center gap-1.5 bg-muted/50 p-1.5 rounded-full border border-border/40">
               {tool === TOOLS.ERASER ? (
                 <>
                   <WidthBtn size={16} current={eraserSize} onClick={() => setEraserSize(16)} />
@@ -122,8 +122,8 @@ function WidthBtn({ size, current, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-6 h-6 flex items-center justify-center rounded-md transition-colors ${
-        isActive ? "bg-background shadow-sm" : "hover:bg-muted"
+      className={`w-7 h-7 flex items-center justify-center rounded-full transition-colors ${
+        isActive ? "bg-background shadow-sm ring-1 ring-border" : "hover:bg-muted"
       }`}
       title={`${size}px`}
     >
