@@ -53,6 +53,12 @@ export default function Board() {
   const startPosRef = useRef(null);
   const pathBufferRef = useRef([]);
   const elementsRef = useRef([]); // Store elements for redrawing
+  
+  // Selection & Drag Refs
+  const selectedElementIdRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const originalElementStateRef = useRef(null);
 
   // --- Board UI State ---
   const [boardName, setBoardName] = useState("Untitled Board");
@@ -153,7 +159,19 @@ export default function Board() {
 
     s.on("element:created", ({ element }) => {
       if (!element) return;
-      elementsRef.current.push(element);
+      const exists = elementsRef.current.some(e => e.id === element.id);
+      if (!exists) elementsRef.current.push(element);
+      redrawCanvas();
+    });
+
+    s.on("element:update", ({ element }) => {
+      if (!element) return;
+      const index = elementsRef.current.findIndex(e => e.id === element.id);
+      if (index !== -1) {
+        elementsRef.current[index] = element;
+      } else {
+        elementsRef.current.push(element);
+      }
       redrawCanvas();
     });
 
@@ -255,12 +273,49 @@ export default function Board() {
       ctx.restore();
     }
     
+    // Draw Selection Bounding Box
+    if (selectedElementIdRef.current) {
+      const selectedEl = elementsRef.current.find(e => e.id === selectedElementIdRef.current);
+      if (selectedEl) {
+        const bounds = getElementBounds(selectedEl);
+        ctx.save();
+        ctx.strokeStyle = "#2563eb"; // primary blue
+        ctx.lineWidth = 1.5 / zoom;
+        ctx.setLineDash([5 / zoom, 5 / zoom]);
+        const pad = 4;
+        ctx.strokeRect(bounds.minX - pad, bounds.minY - pad, (bounds.maxX - bounds.minX) + pad*2, (bounds.maxY - bounds.minY) + pad*2);
+        
+        // Corner handles
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#fff";
+        const handleSize = 6 / zoom;
+        const drawHandle = (hx, hy) => {
+            ctx.strokeRect(hx - handleSize/2, hy - handleSize/2, handleSize, handleSize);
+            ctx.fillRect(hx - handleSize/2, hy - handleSize/2, handleSize, handleSize);
+        };
+        drawHandle(bounds.minX - pad, bounds.minY - pad);
+        drawHandle(bounds.maxX + pad, bounds.minY - pad);
+        drawHandle(bounds.minX - pad, bounds.maxY + pad);
+        drawHandle(bounds.maxX + pad, bounds.maxY + pad);
+        
+        ctx.restore();
+      }
+    }
+    
     ctx.restore();
   }, [pan, zoom, tool, color, thickness, eraserSize, getCtx]);
 
   useEffect(() => {
     redrawCanvas();
   }, [redrawCanvas, pan, zoom]);
+
+  useEffect(() => {
+    if (tool !== TOOLS.CURSOR) {
+        selectedElementIdRef.current = null;
+        isDraggingRef.current = false;
+        redrawCanvas();
+    }
+  }, [tool, redrawCanvas]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -293,7 +348,7 @@ export default function Board() {
     const startX = Math.floor(left / gridSize) * gridSize;
     const startY = Math.floor(top / gridSize) * gridSize;
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
     for (let x = startX; x < left + width; x += gridSize) {
       for (let y = startY; y < top + height; y += gridSize) {
         ctx.beginPath();
@@ -394,6 +449,43 @@ export default function Board() {
     return { x, y };
   };
 
+  const getElementBounds = (el) => {
+    if (["rect", "image", "sticky", "text", "ellipse", "line", "arrow"].includes(el.type)) {
+      const minX = Math.min(el.x, el.x + (el.w || 0));
+      const maxX = Math.max(el.x, el.x + (el.w || 0));
+      const minY = Math.min(el.y, el.y + (el.h || 0));
+      const maxY = Math.max(el.y, el.y + (el.h || 0));
+      if (el.type === "text") {
+        const estW = (el.text || "").length * ((el.fontSize || 20) * 0.6);
+        return { minX: el.x, maxX: el.x + estW, minY: el.y, maxY: el.y + (el.fontSize || 20) };
+      }
+      return { minX, maxX, minY, maxY };
+    } else if (el.type === "pencil" || el.type === "eraser") {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      if (el.path && el.path.length > 0) {
+        el.path.forEach(p => {
+          if (p.x < minX) minX = p.x;
+          if (p.x > maxX) maxX = p.x;
+          if (p.y < minY) minY = p.y;
+          if (p.y > maxY) maxY = p.y;
+        });
+        return { minX, maxX, minY, maxY };
+      }
+    }
+    return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+  };
+
+  const hitTest = (x, y, el) => {
+    const bounds = getElementBounds(el);
+    const padding = 10;
+    return (
+      x >= bounds.minX - padding &&
+      x <= bounds.maxX + padding &&
+      y >= bounds.minY - padding &&
+      y <= bounds.maxY + padding
+    );
+  };
+
   // --- Handlers ---
   const handlePointerDown = (e) => {
     if (e.button === 2) return; // ignore right click
@@ -407,13 +499,33 @@ export default function Board() {
       return;
     }
     
+    const pos = getPosFromEvent(e);
+    startPosRef.current = pos;
+
     if (currentMode === TOOLS.CURSOR) {
-        // Simple selection not fully implemented, skip for now.
+        let hitElement = null;
+        // Reverse iterate to click top-most items first
+        for (let i = elementsRef.current.length - 1; i >= 0; i--) {
+            const el = elementsRef.current[i];
+            if (hitTest(pos.x, pos.y, el)) {
+                hitElement = el;
+                break;
+            }
+        }
+
+        if (hitElement) {
+            selectedElementIdRef.current = hitElement.id;
+            isDraggingRef.current = true;
+            originalElementStateRef.current = JSON.parse(JSON.stringify(hitElement));
+            dragOffsetRef.current = { x: pos.x, y: pos.y };
+        } else {
+            selectedElementIdRef.current = null;
+            isDraggingRef.current = false;
+        }
+        redrawCanvas();
         return;
     }
 
-    const pos = getPosFromEvent(e);
-    startPosRef.current = pos;
     drawingRef.current = true;
     
     if (tool === TOOLS.PENCIL || tool === TOOLS.ERASER) {
@@ -454,9 +566,33 @@ export default function Board() {
       return;
     }
 
-    if (!drawingRef.current) return;
-
     const pos = getPosFromEvent(e);
+
+    if (currentMode === TOOLS.CURSOR) {
+        if (isDraggingRef.current && selectedElementIdRef.current) {
+            const dx = pos.x - dragOffsetRef.current.x;
+            const dy = pos.y - dragOffsetRef.current.y;
+            
+            const elIndex = elementsRef.current.findIndex(el => el.id === selectedElementIdRef.current);
+            if (elIndex !== -1) {
+                const el = elementsRef.current[elIndex];
+                const original = originalElementStateRef.current;
+                
+                if (el.type === "pencil" || el.type === "eraser") {
+                    if (original.path) {
+                        el.path = original.path.map(p => ({ x: p.x + dx, y: p.y + dy }));
+                    }
+                } else {
+                    el.x = original.x + dx;
+                    el.y = original.y + dy;
+                }
+                redrawCanvas();
+            }
+        }
+        return;
+    }
+
+    if (!drawingRef.current) return;
     
     if (tool === TOOLS.PENCIL || tool === TOOLS.ERASER) {
       pathBufferRef.current.push(pos);
@@ -481,6 +617,20 @@ export default function Board() {
       setIsPanning(false);
       return;
     }
+    
+    if (currentMode === TOOLS.CURSOR) {
+        if (isDraggingRef.current && selectedElementIdRef.current) {
+            isDraggingRef.current = false;
+            const el = elementsRef.current.find(e => e.id === selectedElementIdRef.current);
+            if (el) {
+                setSaveStatus("Saving...");
+                socketRef.current?.emit("element:update", { element: el });
+                setTimeout(() => setSaveStatus("Saved"), 500);
+            }
+        }
+        return;
+    }
+
     if (!drawingRef.current) return;
     drawingRef.current = false;
 
@@ -610,7 +760,7 @@ export default function Board() {
       />
 
       <div className="flex flex-1 overflow-hidden relative">
-        <main className="flex-1 relative overflow-hidden bg-[#F8FAFC]">
+        <main className="flex-1 relative overflow-hidden bg-background">
           
           <Toolbar 
             tool={currentMode} 
