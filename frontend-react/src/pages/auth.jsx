@@ -143,15 +143,15 @@ export default function Auth() {
           <h1 className="text-4xl md:text-5xl tracking-tighter text-foreground font-regular mb-2">
             {mode === "signup" ? "Sign up" : "Sign in"}
           </h1>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
             {mode === "signup"
-              ? "Sign up to enjoy the feature of Plixa"
-              : "Please login to continue to your account."}
+              ? "Create your account and start collaborating instantly."
+              : "Welcome back. Sign in to continue to your workspace."}
           </p>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+            <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -167,8 +167,8 @@ export default function Auth() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Jonas Khanwald"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                  placeholder="Jonas Kahnwald"
+                  className="field-input"
                 />
               </div>
             )}
@@ -182,7 +182,7 @@ export default function Auth() {
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                  className="field-input"
                 />
               </div>
             )}
@@ -195,8 +195,8 @@ export default function Auth() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="jonas_kahnwald@gmail.com"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm"
+                placeholder="jonas.kahnwald@acme.com"
+                className="field-input"
               />
             </div>
 
@@ -210,7 +210,7 @@ export default function Auth() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-sm pr-12"
+                  className="field-input pr-12"
                 />
                 <button
                   type="button"
