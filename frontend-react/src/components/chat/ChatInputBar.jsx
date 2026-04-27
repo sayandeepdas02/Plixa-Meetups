@@ -29,7 +29,7 @@ export default function ChatInputBar({ onSend, disabled }) {
     }
 
     return (
-        <div className="flex items-end gap-2 p-3 border-t border-border bg-white">
+        <div className="flex items-end gap-3 p-4 border-t border-border bg-background shadow-premium">
             <textarea
                 ref={inputRef}
                 value={value}
@@ -39,8 +39,8 @@ export default function ChatInputBar({ onSend, disabled }) {
                 placeholder={disabled ? 'Connecting...' : 'Message the room...'}
                 maxLength={2000}
                 rows={1}
-                className="flex-1 resize-none text-sm bg-bg-light border border-border rounded-xl px-3 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all text-text-main placeholder:text-text-muted leading-relaxed max-h-28 overflow-y-auto disabled:opacity-50"
-                style={{ minHeight: '40px' }}
+                className="flex-1 resize-none text-sm bg-muted border border-border/60 rounded-lg px-4 py-2.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-foreground placeholder:text-muted-foreground/50 leading-relaxed max-h-28 overflow-y-auto disabled:opacity-50"
+                style={{ minHeight: '42px' }}
                 onInput={(e) => {
                     // Auto-grow textarea up to max-h-28
                     e.target.style.height = 'auto';
@@ -50,10 +50,10 @@ export default function ChatInputBar({ onSend, disabled }) {
             <button
                 onClick={handleSend}
                 disabled={!value.trim() || disabled}
-                className="flex-none w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white transition-all hover:bg-primary-hover active:scale-90 disabled:opacity-40 disabled:pointer-events-none"
+                className="flex-none w-[42px] h-[42px] rounded-lg bg-foreground text-background transition-all hover:opacity-90 active:scale-95 disabled:opacity-30 disabled:pointer-events-none shadow-sm flex items-center justify-center"
                 title="Send (Enter)"
             >
-                <IconSend className="w-4 h-4" />
+                <IconSend className="w-4.5 h-4.5" />
             </button>
         </div>
     );

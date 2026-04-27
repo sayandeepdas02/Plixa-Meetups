@@ -335,11 +335,10 @@ export default function Board() {
   }, [redrawCanvas]);
 
   const drawGrid = (ctx, canvas, pan, zoom) => {
-    // Subtle infinite dotted grid
-    const gridSize = 30; // base grid size
-    const dotRadius = 1 / zoom; // keep dots small even when zoomed
+    // Very subtle Clean UI grid
+    const gridSize = 40; 
+    const dotRadius = 0.5 / zoom; 
     
-    // Calculate visible area in world coordinates
     const left = -pan.x / zoom;
     const top = -pan.y / zoom;
     const width = (canvas.width / (window.devicePixelRatio || 1)) / zoom;
@@ -348,7 +347,11 @@ export default function Board() {
     const startX = Math.floor(left / gridSize) * gridSize;
     const startY = Math.floor(top / gridSize) * gridSize;
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; // Subtle dots
+    if (document.documentElement.classList.contains('dark')) {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    }
+
     for (let x = startX; x < left + width; x += gridSize) {
       for (let y = startY; y < top + height; y += gridSize) {
         ctx.beginPath();
@@ -397,7 +400,7 @@ export default function Board() {
       }
     } else if (el.type === "text") {
       ctx.fillStyle = el.fill || "#000";
-      ctx.font = `${el.fontSize || 20}px "Inter", sans-serif`;
+      ctx.font = `${el.fontSize || 20}px "Nunito Sans", sans-serif`;
       ctx.textBaseline = "top";
       ctx.fillText(el.text || "", el.x, el.y);
     } else if (el.type === "sticky") {
@@ -409,7 +412,7 @@ export default function Board() {
       ctx.shadowColor = "transparent";
       
       ctx.fillStyle = "#333";
-      ctx.font = `16px "Inter", sans-serif`;
+      ctx.font = `16px "Nunito Sans", sans-serif`;
       ctx.textBaseline = "top";
       
       // Simple word wrap

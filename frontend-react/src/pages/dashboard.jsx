@@ -29,70 +29,83 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="h-16 border-b border-border bg-background flex items-center justify-between px-8 sticky top-0 z-50">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <img src={logo} alt="Logo" className="h-8 w-auto" />
-          <span className="font-bold text-foreground">Plixa</span>
+    <div className="min-h-screen bg-background text-foreground font-sans pattern-dots">
+      <nav className="h-14 border-b border-border bg-background/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-50">
+        <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group">
+          <div className="w-7 h-7 bg-foreground rounded flex items-center justify-center">
+             <img src={logo} alt="P" className="w-4 h-auto invert dark:invert-0" />
+          </div>
+          <span className="font-bold tracking-tight text-foreground">Plixa</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <ThemeToggle />
-          <span className="text-sm text-muted-foreground hidden sm:block">Welcome, <span className="font-semibold text-foreground">{user?.name || 'User'}</span></span>
-          <div className="relative">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
-            >
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </button>
-            {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-premium border border-border py-2">
-                <Link to="/settings" className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
-                  Settings
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
+          <div className="h-4 w-px bg-border"></div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-muted-foreground hidden sm:block">
+              <span className="text-foreground">{user?.name || 'User'}</span>
+            </span>
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] font-bold text-foreground hover:bg-border transition-colors"
+              >
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-premium border border-border py-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <Link to="/settings" className="block px-4 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors">
+                    Settings
+                  </Link>
+                  <div className="h-px bg-border my-1.5"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto py-12 lg:py-20">
-        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 className="text-3xl md:text-5xl tracking-tighter text-foreground font-medium">Your Boards</h1>
-            <p className="text-muted-foreground mt-2">Manage and collaborate on your real-time whiteboards.</p>
+      <div className="container mx-auto max-w-6xl py-12 px-6">
+        <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-2">
+            <div className="section-badge mb-2">Workspace</div>
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground">Your Boards</h1>
+            <p className="text-muted-foreground text-sm max-w-md">
+              Collaborate in real-time with your team on an infinite canvas.
+            </p>
           </div>
           <div className="flex gap-3">
             <Link to="/board/global">
-               <Button variant="outline">Open Global Board</Button>
+               <Button variant="outline" className="h-10 text-xs">Global Board</Button>
             </Link>
-            <Button onClick={() => document.getElementById('new-board-input').focus()}>Create Board</Button>
+            <Button className="h-10 text-xs" onClick={() => document.getElementById('new-board-input').focus()}>New Board</Button>
           </div>
         </header>
 
-        <section className="mb-12">
-          <form onSubmit={createBoard} className="glass-card p-6 flex items-center gap-4 max-w-2xl border-border">
-            <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
-              <IconPlus className="w-6 h-6" />
+        <section className="mb-16">
+          <form onSubmit={createBoard} className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 max-w-2xl shadow-sm focus-within:border-foreground/20 transition-colors">
+            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-foreground">
+              <IconPlus className="w-5 h-5" />
             </div>
             <input
               id="new-board-input"
-              className="flex-1 bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-lg font-medium"
+              className="flex-1 bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground/60 text-base font-medium"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Give your new board a name..."
+              placeholder="Enter board title..."
             />
-            <Button size="lg">Create</Button>
+            <Button size="sm" className="h-9">Create</Button>
           </form>
         </section>
 
-        <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="screen-line !my-12"></div>
+
+        <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {boards.map(b => (
             <BoardCard key={b.id} board={b} />
           ))}
@@ -104,23 +117,29 @@ export default function Dashboard() {
 
 function BoardCard({ board }) {
   return (
-    <div className="group glass-card overflow-hidden hover:border-primary/30 transition-all border-border shadow-soft hover:shadow-premium bg-card">
-      <div className="h-40 bg-muted/50 border-b border-border relative overflow-hidden flex items-center justify-center bg-[radial-gradient(var(--border)_1px,transparent_0)] bg-[size:16px_16px] opacity-80 group-hover:opacity-100 transition-opacity">
-        {/* Abstract preview placeholder */}
-        <div className="w-2/3 h-1/2 border-2 border-primary/10 rounded-lg rotate-3 group-hover:rotate-0 transition-transform"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent"></div>
+    <div className="group border border-border rounded-xl bg-card overflow-hidden hover:border-foreground/20 transition-all duration-300 flex flex-col">
+      <div className="h-44 bg-muted/30 border-b border-border relative overflow-hidden flex items-center justify-center pattern-dots opacity-60 group-hover:opacity-100 transition-opacity">
+        <div className="w-3/4 h-3/4 border border-border bg-background rounded shadow-sm rotate-2 group-hover:rotate-0 transition-transform duration-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent"></div>
       </div>
-      <div className="p-5 flex flex-col gap-4">
-        <div>
-          <h3 className="text-lg font-medium tracking-tight text-foreground truncate group-hover:text-primary transition-colors">{board.name}</h3>
-          <p className="text-[10px] uppercase font-bold text-muted-foreground mt-1 tracking-wider">Last updated {board.updated}</p>
+      <div className="p-5 flex-1 flex flex-col">
+        <div className="mb-6 flex-1">
+          <h3 className="text-base font-semibold tracking-tight text-foreground truncate group-hover:text-brand-blue transition-colors duration-300">
+            {board.name}
+          </h3>
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+              Updated {board.updated}
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-4 border-t border-border/50">
           <Link to={`/board/${board.id}`} className="flex-1">
-             <Button size="sm" className="w-full text-xs">Open</Button>
+             <Button size="sm" className="w-full h-8 text-[11px] font-bold uppercase tracking-wider">Open Board</Button>
           </Link>
-          <Button size="icon" variant="outline" title="Share Board">
-            <IconShare className="w-4 h-4" />
+          <Button size="icon" variant="outline" className="w-8 h-8 rounded-lg" title="Share Board">
+            <IconShare className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>

@@ -68,11 +68,11 @@ function PanelContent({
   return (
     <div className="flex flex-col h-full w-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14 border-b border-border/60 bg-background flex-none w-full">
-        <span className="font-semibold tracking-tight text-foreground text-sm">Collaboration Hub</span>
+      <div className="flex items-center justify-between px-6 h-14 border-b border-border bg-background flex-none w-full">
+        <span className="font-bold tracking-tight text-foreground text-[11px] uppercase tracking-[0.2em]">Collaboration</span>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
           title="Close panel"
         >
           <IconX className="w-4 h-4" />
@@ -80,10 +80,9 @@ function PanelContent({
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center px-4 border-b border-border/60 bg-secondary/30">
+      <div className="flex items-center px-4 border-b border-border bg-muted/30">
         <TabBtn label="Chat" active={activeTab === "chat"} onClick={() => setActiveTab("chat")} />
         <TabBtn label="Active" badge={participants.length} active={activeTab === "participants"} onClick={() => setActiveTab("participants")} />
-        {/* <TabBtn label="Activity" active={activeTab === "activity"} onClick={() => setActiveTab("activity")} /> */}
       </div>
 
       {/* Content Area */}
@@ -96,26 +95,23 @@ function PanelContent({
         )}
 
         {activeTab === "participants" && (
-          <div className="absolute inset-0 overflow-y-auto p-4 flex flex-col gap-2">
-            <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">In this board ({participants.length})</h4>
+          <div className="absolute inset-0 overflow-y-auto p-6 flex flex-col gap-3">
+            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">In this board ({participants.length})</h4>
             {participants.map((pid, i) => {
               const isMe = pid === socketId;
               const name = isMe ? "You" : `User ${pid.slice(0, 4)}`;
-              // Generate a stable color based on socket ID
-              const colors = ["bg-blue-500", "bg-emerald-500", "bg-purple-500", "bg-amber-500", "bg-pink-500"];
-              const colorClass = colors[i % colors.length];
-
+              
               return (
-                <div key={pid} className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-border/50">
-                  <div className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center text-[10px] font-bold text-white shadow-sm`}>
-                    {name.slice(0, 2).toUpperCase()}
+                <div key={pid} className="flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-muted/20 hover:bg-muted transition-all duration-300">
+                  <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] font-bold shadow-sm">
+                    {name.slice(0, 1).toUpperCase()}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      {name} {isMe && <span className="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded font-medium">Me</span>}
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-bold tracking-tight text-foreground flex items-center gap-2">
+                      {name} {isMe && <span className="text-[9px] bg-foreground/10 text-muted-foreground px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Me</span>}
                     </span>
-                    <span className="text-[11px] text-green-500/80 flex items-center gap-1 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online
+                    <span className="text-[10px] text-green-500 flex items-center gap-1.5 font-bold uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span> Online
                     </span>
                   </div>
                 </div>
@@ -123,9 +119,13 @@ function PanelContent({
             })}
             
             {participants.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-40 text-muted-foreground text-sm text-center">
-                <IconUsers className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                No other participants here yet.<br/>Share the board link!
+              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground text-sm text-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center border border-border/40 opacity-50">
+                   <IconUsers className="w-8 h-8" />
+                </div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] opacity-60">
+                  No other participants yet
+                </p>
               </div>
             )}
           </div>
@@ -139,18 +139,18 @@ function TabBtn({ label, badge, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`relative py-3 px-3 text-xs font-semibold transition-colors focus:outline-none flex items-center gap-2 ${
-        active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+      className={`relative py-4 px-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 focus:outline-none flex items-center gap-2.5 ${
+        active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {label}
       {badge !== undefined && (
-        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${active ? "bg-primary/10 text-primary" : "bg-slate-200 text-slate-500"}`}>
+        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${active ? "bg-foreground text-background" : "bg-muted text-muted-foreground border border-border/60"}`}>
           {badge}
         </span>
       )}
       {active && (
-        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></span>
+        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground"></span>
       )}
     </button>
   );

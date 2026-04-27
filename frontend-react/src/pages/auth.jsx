@@ -129,80 +129,86 @@ export default function Auth() {
   });
 
   return (
-    <div className="min-h-screen flex font-sans">
-      {/* Left Side - Form */}
-      <div className="w-full lg:w-2/5 flex items-center justify-center p-6 lg:p-12 bg-background">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <Link to="/" className="inline-flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
-            <img src={logo} alt="Plixa Logo" className="h-10 w-auto" />
-            <span className="text-xl font-bold text-foreground">Plixa</span>
+    <div className="min-h-screen flex font-sans bg-background text-foreground overflow-hidden">
+      {/* Left Side - Form Area */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 relative z-10 border-r border-border">
+        <div className="w-full max-w-[400px]">
+          {/* Logo & Navigation */}
+          <Link to="/" className="inline-flex items-center gap-2.5 mb-12 group">
+            <div className="w-8 h-8 bg-foreground rounded flex items-center justify-center group-hover:opacity-90 transition-opacity">
+               <img src={logo} alt="P" className="w-5 h-auto invert dark:invert-0" />
+            </div>
+            <span className="text-lg font-bold tracking-tight">Plixa</span>
           </Link>
 
-          {/* Title */}
-          <h1 className="text-4xl md:text-5xl tracking-tighter text-foreground font-regular mb-2">
-            {mode === "signup" ? "Sign up" : "Sign in"}
-          </h1>
-          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
-            {mode === "signup"
-              ? "Create your account and start collaborating instantly."
-              : "Welcome back. Sign in to continue to your workspace."}
-          </p>
+          {/* Header */}
+          <div className="mb-10">
+            <h1 className="text-3xl font-semibold tracking-tight mb-3">
+              {mode === "signup" ? "Create an account" : "Sign in to Plixa"}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {mode === "signup"
+                ? "Enter your details below to get started with your workspace."
+                : "Enter your email below to access your collaborative boards."}
+            </p>
+          </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+            <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive animate-in fade-in slide-in-from-top-2 duration-300">
               {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name Field (Sign Up Only) */}
+          <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">Your Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Jonas Kahnwald"
-                  className="field-input"
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g. John Doe"
+                    className="field-input"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Date of Birth</label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    className="field-input"
+                  />
+                </div>
+              </>
             )}
 
-            {/* Date of Birth (Sign Up Only) */}
-            {mode === "signup" && (
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">Date of Birth</label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  className="field-input"
-                />
-              </div>
-            )}
-
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Email</label>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="jonas.kahnwald@acme.com"
+                placeholder="name@company.com"
                 className="field-input"
               />
             </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm text-muted-foreground mb-2">Password</label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Password</label>
+                {mode === "signin" && (
+                  <button type="button" className="text-[11px] font-medium text-brand-blue hover:underline">
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -215,99 +221,124 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
+                  {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Keep Logged In (Sign In Only) */}
             {mode === "signin" && (
-              <div className="flex items-center">
+              <div className="flex items-center ml-1 py-1">
                 <input
                   type="checkbox"
                   id="keepLoggedIn"
                   checked={keepLoggedIn}
                   onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
+                  className="w-4 h-4 rounded border-border text-foreground focus:ring-foreground/20"
                 />
-                <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-foreground">
+                <label htmlFor="keepLoggedIn" className="ml-2.5 text-xs font-medium text-muted-foreground cursor-pointer">
                   Keep me logged in
                 </label>
               </div>
             )}
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={loading}
-              size="lg"
-              className="w-full text-base"
+              variant="brand"
+              className="w-full h-11 text-sm font-semibold mt-6"
             >
-              {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Sign in"}
+              {loading ? "Processing..." : mode === "signup" ? "Sign Up" : "Sign In"}
             </Button>
 
-            {/* Divider */}
-            <div className="relative my-6">
+            <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background text-muted-foreground">or</span>
+              <div className="relative flex justify-center text-[11px] uppercase tracking-widest font-bold">
+                <span className="px-4 bg-background text-muted-foreground">Or continue with</span>
               </div>
             </div>
 
-            {/* Google Sign In */}
             <Button
               type="button"
               variant="outline"
-              size="lg"
-              className="w-full gap-3 text-base"
+              className="w-full h-11 gap-3 text-sm font-medium border-border"
               onClick={() => handleGoogleLogin()}
               disabled={loading}
             >
-              <IconGoogle className="w-5 h-5" />
-              {mode === "signup" ? "Continue with Google" : "Sign in with Google"}
+              <IconGoogle className="w-4 h-4" />
+              Google
             </Button>
-
-            {/* Toggle Mode */}
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              {mode === "signup" ? (
-                <>
-                  Already have an account?{" "}
-                  <button type="button" onClick={toggleMode} className="text-primary font-semibold hover:underline">
-                    Sign in
-                  </button>
-                </>
-              ) : (
-                <>
-                  Need an account?{" "}
-                  <button type="button" onClick={toggleMode} className="text-primary font-semibold hover:underline">
-                    Create one
-                  </button>
-                </>
-              )}
-            </p>
           </form>
 
-          {/* Back to Home */}
-          <div className="mt-8 pt-6 border-t border-border">
-            <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1">
-              <IconArrowBack className="w-4 h-4" />
-              Back to Home
+          {/* Toggle Mode */}
+          <p className="text-center text-sm text-muted-foreground mt-10">
+            {mode === "signup" ? (
+              <>
+                Already have an account?{" "}
+                <button type="button" onClick={toggleMode} className="text-foreground font-semibold hover:underline">
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                Don&apos;t have an account?{" "}
+                <button type="button" onClick={toggleMode} className="text-foreground font-semibold hover:underline">
+                  Create one
+                </button>
+              </>
+            )}
+          </p>
+
+          <footer className="mt-16 pt-8 border-t border-border flex flex-col items-center gap-4">
+            <Link to="/" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <IconArrowBack className="w-3.5 h-3.5" />
+              Back to main page
             </Link>
-          </div>
+            <p className="text-[10px] text-muted-foreground/60 uppercase tracking-[0.2em] font-bold">
+              © 2024 Plixa Technologies
+            </p>
+          </footer>
         </div>
       </div>
 
-      {/* Right Side - Blue Wave Background */}
-      <div className="hidden lg:block lg:w-3/5 relative overflow-hidden">
-        <img
-          src={authBg}
-          alt="Abstract waves"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {/* Right Side - Visual Area */}
+      <div className="hidden lg:flex lg:w-1/2 bg-muted relative items-center justify-center overflow-hidden pattern-dots">
+        <div className="absolute inset-0 bg-gradient-to-br from-background/20 via-transparent to-background/20 z-0"></div>
+        
+        <div className="relative z-10 p-16 max-w-xl">
+          <div className="space-y-6">
+            <div className="w-12 h-1 px-0 bg-foreground mb-12"></div>
+            <h2 className="text-5xl font-semibold tracking-tight leading-[1.1] text-foreground">
+              Design, collaborate, <br />
+              <span className="text-muted-foreground">and build together.</span>
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Join thousands of teams who use Plixa to visualize their ideas and streamline their creative workflows in real-time.
+            </p>
+            
+            <div className="pt-12 grid grid-cols-2 gap-8 border-t border-border/60">
+              <div>
+                <p className="text-2xl font-semibold tracking-tight text-foreground">99.9%</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Uptime</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold tracking-tight text-foreground">10k+</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Daily Users</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative structural lines */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+          <div className="absolute top-1/4 w-full h-px bg-border/40"></div>
+          <div className="absolute top-3/4 w-full h-px bg-border/40"></div>
+          <div className="absolute left-1/4 h-full w-px bg-border/40"></div>
+          <div className="absolute left-3/4 h-full w-px bg-border/40"></div>
+        </div>
       </div>
     </div>
   );

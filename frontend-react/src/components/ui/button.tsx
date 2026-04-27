@@ -23,30 +23,33 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary — solid brand blue
+        // Primary — Solid Black/White for Clean UI
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md",
+          "bg-primary text-primary-foreground shadow-sm hover:opacity-90 active:scale-[0.98]",
+        // Brand — Solid Blue
+        brand:
+          "bg-[var(--brand-blue)] text-white shadow-sm hover:opacity-90 active:scale-[0.98]",
         // Destructive
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        // Outline — border only, muted fill on hover
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-[0.98]",
+        // Outline — Border only
         outline:
-          "border border-border bg-transparent text-foreground hover:bg-muted hover:border-primary/40",
-        // Secondary — subtle filled
+          "border border-border bg-transparent text-foreground hover:bg-muted active:scale-[0.98]",
+        // Secondary
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/70",
-        // Ghost — no border, subtle fill on hover
+          "bg-secondary text-secondary-foreground hover:bg-secondary/70 active:scale-[0.98]",
+        // Ghost
         ghost:
-          "bg-transparent text-foreground hover:bg-muted hover:text-foreground",
+          "bg-transparent text-foreground hover:bg-muted active:scale-[0.98]",
         // Link
-        link: "text-primary underline-offset-4 hover:underline p-0 h-auto",
+        link: "text-brand-blue underline-offset-4 hover:underline p-0 h-auto active:scale-100",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm:      "h-8 rounded-lg px-3 text-xs",
-        lg:      "h-11 px-6 text-base",
-        xl:      "h-12 px-8 text-base",
-        icon:    "h-10 w-10 rounded-xl",
+        default: "h-9 px-5 py-2",
+        sm:      "h-8 rounded-lg px-3 text-[11px] font-bold uppercase tracking-wider",
+        lg:      "h-11 px-8 text-sm",
+        xl:      "h-12 px-10 text-base",
+        icon:    "h-9 w-9 rounded-lg",
       },
     },
     defaultVariants: {
